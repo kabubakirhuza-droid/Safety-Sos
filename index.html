@@ -1,0 +1,1134 @@
+<!doctype html><html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Safety SOS — 3 интерфейс</title><style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,sans-serif;background:#08111f;color:#eaf2ff}*{box-sizing:border-box}body{margin:0}header{padding:15px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#0c192b;border-bottom:1px solid #263a52}.logo{font-weight:800;font-size:18px}.sub{font-size:12px;color:#a3b7cd;margin-top:4px}.warn{color:#ffd5a0;font-size:12px;background:#3d2b17;border:1px solid #76552a;padding:8px 12px;border-radius:9px}nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px;background:#0b1627}button{cursor:pointer;border:1px solid #324761;border-radius:11px;background:#15253b;color:#eaf2ff;padding:10px 16px;font-weight:700}button.active{background:#2476e8;border-color:#2476e8}main{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:0;height:calc(100dvh - 132px);min-height:560px}.views{min-width:0;position:relative;background:#f7f9fc}.view{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:white}.view.active{display:block}aside{padding:20px;background:#101f33;border-left:1px solid #30435c;overflow:auto}aside h2{font-size:18px;margin:0 0 12px}aside p,aside li{color:#c6d4e5;line-height:1.55;font-size:14px}aside ol{padding-left:20px}aside .hint{border-top:1px solid #2d4057;padding-top:15px;margin-top:18px}footer{font-size:12px;color:#a8bdd4;padding:8px 20px;background:#0b1627}@media(max-width:800px){main{display:flex;flex-direction:column;height:auto}.views{height:70dvh;min-height:460px}aside{border-left:0;border-top:1px solid #30435c}header{padding:12px}nav{padding:10px}button{flex:1;padding:10px 8px;font-size:13px}} </style></head><body>
+<header><div><div class="logo">🛡 Safety SOS — бирлаштирилган интерфейс</div><div class="sub">User · Dispatcher · Crew — битта HTML файл</div></div><div class="warn">⚠️ Фақат интерфейс намунаси. Ҳақиқий ёрдам хизмати эмас.</div></header>
+<nav aria-label="Бўлимлар"><button data-tab="user" class="active" aria-pressed="true">📱 Фойдаланувчи</button><button data-tab="dispatch" aria-pressed="false">🖥 Диспетчер</button><button data-tab="crew" aria-pressed="false">🚙 Экипаж</button></nav><main><section class="views" aria-label="Илова кўриниши">
+<iframe title="Фойдаланувчи" id="frame-user" class="view active" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ru&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1,viewport-fit=cover&quot;&gt;
+&lt;title&gt;Safety SOS&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css&quot;&gt;
+&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js&quot;&gt;&lt;/script&gt;
+&lt;style&gt;
+:root{
+  --blue:#1677FF;--green:#10B981;--red:#F04452;--navy:#071827;
+  --bg:#F7F9FC;--text:#0B1B2E;--muted:#6B7A90;
+  --glass:rgba(255,255,255,.68);--glass-b:rgba(255,255,255,.55);
+  --map-land:#EEF1F5;--map-block:#E4E9EF;--map-road:#FFFFFF;--map-road2:#F9D989;--map-park:#D5EBD8;--map-water:#BCD9F2;
+  --shadow:0 10px 40px rgba(10,30,60,.18);
+}
+:root[data-theme=&quot;dark&quot;]{
+  --bg:#080F1D;--text:#F2F6FC;--muted:#8D9BB2;
+  --glass:rgba(15,23,42,.58);--glass-b:rgba(255,255,255,.14);
+  --map-land:#141C2B;--map-block:#18233A;--map-road:#26324A;--map-road2:#4A4330;--map-park:#16301F;--map-water:#12304D;
+  --shadow:0 10px 40px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,&quot;Inter&quot;,&quot;Segoe UI&quot;,Roboto,sans-serif;background:#0b1220;color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#phone{position:relative;width:390px;height:844px;max-height:100vh;background:var(--bg);border-radius:44px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 10px #05080f;user-select:none;touch-action:none}
+@media (max-width:480px){body{display:block}#phone{width:100vw;height:100dvh;max-height:none;border-radius:0;box-shadow:none}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex;animation:in .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes in{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+.safe-t{padding-top:max(env(safe-area-inset-top),18px)}
+.safe-b{padding-bottom:max(env(safe-area-inset-bottom),14px)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.glass{background:var(--glass);backdrop-filter:blur(22px) saturate(1.6);-webkit-backdrop-filter:blur(22px) saturate(1.6);border:1px solid var(--glass-b);box-shadow:var(--shadow)}
+.btn{height:56px;border-radius:20px;background:var(--blue);color:#fff;font-weight:600;font-size:17px;width:100%;box-shadow:0 8px 24px rgba(22,119,255,.4);transition:transform .15s}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.45;box-shadow:none}
+.btn.ghost{background:var(--glass);color:var(--text);box-shadow:none;border:1px solid var(--glass-b)}
+
+/* splash / welcome */
+.navy{background:radial-gradient(120% 80% at 50% 0%,#0f3a66 0%,#071827 60%)}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 28px;color:#fff}
+.logo{width:96px;height:96px;border-radius:26px;background:linear-gradient(145deg,#34d399,#10B981 60%,#0a8f66);display:grid;place-items:center;box-shadow:0 14px 40px rgba(16,185,129,.45)}
+.logo.glassy{width:128px;height:128px;border-radius:36px;background:linear-gradient(145deg,rgba(255,255,255,.28),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(20px)}
+h1{font-size:34px;letter-spacing:-.8px;margin:22px 0 8px;font-weight:700}
+h2{font-size:28px;letter-spacing:-.6px;margin:0 0 8px;font-weight:700}
+p.sub{margin:0;color:rgba(255,255,255,.72);font-size:16px;line-height:1.4}
+.pad{padding:0 22px}
+.legal{font-size:12px;color:rgba(255,255,255,.5);text-align:center;margin-top:14px}
+.demo-badge{position:absolute;top:calc(max(env(safe-area-inset-top),18px) + 52px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(245,158,11,.95);color:#2a1800;padding:4px 10px;border-radius:99px;z-index:50;white-space:nowrap;pointer-events:none}
+
+/* forms */
+.form{flex:1;padding:70px 24px 0;display:flex;flex-direction:column}
+.form h2{color:var(--text)}.form .sub2{color:var(--muted);font-size:16px;margin:0 0 26px}
+.field{height:60px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-b);display:flex;align-items:center;padding:0 18px;font-size:22px;font-weight:600;gap:8px;box-shadow:var(--shadow)}
+.field input{flex:1;border:0;background:none;outline:0;font:inherit;color:var(--text);min-width:0;letter-spacing:.5px}
+.err{color:var(--red);font-size:14px;min-height:20px;margin:10px 4px}
+.otp{display:flex;gap:10px}.otp input{width:100%;height:62px;border-radius:18px;border:1px solid var(--glass-b);background:var(--glass);text-align:center;font-size:26px;font-weight:700;color:var(--text);outline:0;min-width:0}
+.otp input:focus{border-color:var(--blue)}
+.cards{display:flex;flex-direction:column;gap:12px;margin-bottom:auto}
+.pcard{border-radius:26px;padding:16px;display:flex;gap:14px;align-items:center}
+.pcard .ic{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;color:#fff;flex:none}
+.pcard b{display:block;font-size:16px}.pcard span{font-size:13px;color:var(--muted)}
+.pcard button{margin-left:auto;font-size:13px;font-weight:600;color:var(--blue);padding:8px 10px;border-radius:12px;background:rgba(22,119,255,.12);white-space:nowrap}
+.pcard button.ok{color:var(--green);background:rgba(16,185,129,.14)}
+
+/* map */
+#mapwrap{position:absolute;inset:0;overflow:hidden;background:var(--map-land)}
+
+.topbar{position:absolute;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.round{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--text)}
+.cap{height:42px;padding:0 18px;border-radius:99px;display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;color:var(--text)}
+.cap i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.25)}
+.gps{position:absolute;right:16px;z-index:5}
+.dock{position:absolute;left:12px;right:12px;bottom:12px;z-index:6;border-radius:34px;padding:14px 14px 8px}
+.slider{position:relative;height:68px;border-radius:99px;background:rgba(22,119,255,.14);overflow:hidden;border:1px solid rgba(22,119,255,.25)}
+.slider .fill{position:absolute;left:0;top:0;bottom:0;width:68px;background:linear-gradient(90deg,#1677FF,#4a9bff);border-radius:99px}
+.slider .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-left:56px;font-weight:600;font-size:16px;color:var(--blue);pointer-events:none;transition:opacity .15s}
+.slider .label::after{content:&quot;&quot;;position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);background-size:220% 100%;animation:shine 2.4s infinite;mix-blend-mode:overlay}
+@keyframes shine{from{background-position:120% 0}to{background-position:-120% 0}}
+.knob{position:absolute;left:5px;top:5px;width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 4px 14px rgba(22,119,255,.5);color:var(--blue);touch-action:none;cursor:grab}
+.alt{display:block;margin:8px auto 2px;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tabs{display:flex;justify-content:space-around;align-items:center;padding:6px 0 0}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:6px 18px;min-width:76px}
+.tab.on{color:var(--blue)}
+.tab.sos{background:var(--blue);color:#fff;width:46px;height:46px;min-width:0;border-radius:50%;justify-content:center;font-weight:800;font-size:12px;box-shadow:0 6px 18px rgba(22,119,255,.5);padding:0}
+.sheetmsg{font-size:15px;line-height:1.35}
+
+/* active sos */
+#active{background:radial-gradient(120% 70% at 50% 10%,#c01f2e 0%,#7a0e1a 55%,#3d060d 100%);color:#fff}
+.shield-glow{width:96px;height:96px;border-radius:30px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,255,255,.3),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.4);box-shadow:0 0 70px rgba(255,90,100,.8);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{box-shadow:0 0 110px rgba(255,120,130,1);transform:scale(1.04)}}
+.silent #active .shield-glow{animation:none}
+.status{margin:10px 0 0;display:flex;flex-direction:column;gap:5px;width:100%}
+.st{display:flex;align-items:center;gap:10px;font-size:14px;padding:6px 12px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);opacity:.45;text-align:left}
+.st.done{opacity:1}.st.done .dot{background:#34d399;color:#04291c}
+.st .dot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+.st.cur{opacity:1;border-color:#fff}
+.chips{display:flex;gap:8px;width:100%;margin-top:12px}
+.chip{flex:1;border-radius:16px;padding:10px;background:rgba(0,0,0,.25);font-size:12px;text-align:left}
+.chip b{display:block;font-size:13px;margin-bottom:2px}
+.abtn{height:46px;border-radius:18px;font-weight:600;font-size:16px;width:100%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);color:#fff}
+.abtn.call{background:#fff;color:#a3121f}
+.holdwrap{position:relative;overflow:hidden}.holdwrap .hf{position:absolute;inset:0;width:0;background:rgba(52,211,153,.55)}
+.holdwrap span{position:relative}
+.toast{position:absolute;left:16px;right:16px;top:calc(max(env(safe-area-inset-top),18px) + 84px);z-index:60;border-radius:20px;padding:12px 16px;font-size:14px;display:none;color:var(--text)}
+.toast.on{display:block;animation:in .3s}
+
+/* sheet on map during active */
+#mapsheet{position:absolute;left:12px;right:12px;bottom:12px;z-index:7;border-radius:30px;padding:16px;display:none}
+.mrow{display:flex;gap:12px;align-items:center}
+.mrow .lg{width:42px;height:42px;border-radius:50%;background:var(--navy);display:grid;place-items:center;flex:none}
+.mic{width:46px;height:46px;border-radius:50%;background:var(--blue);display:grid;place-items:center;color:#fff;flex:none;margin-left:auto;box-shadow:0 6px 16px rgba(22,119,255,.5)}
+.note{margin-top:12px;border-radius:16px;border:1px dashed var(--glass-b);padding:12px;font-size:14px;color:var(--muted)}
+.cancel{display:block;text-align:center;color:var(--red);font-weight:600;font-size:15px;margin:12px auto 0;padding:8px}
+.marker-sos{position:absolute;transform:translate(-50%,-100%);z-index:3}
+
+/* lists */
+.list{display:flex;flex-direction:column;gap:12px;padding:0 16px 140px;overflow:auto}
+.group{border-radius:26px;overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:15px 18px;font-size:16px;width:100%;text-align:left;border-bottom:1px solid var(--glass-b)}
+.row:last-child{border-bottom:0}.row small{margin-left:auto;color:var(--muted);font-size:14px}
+.sw{margin-left:auto;width:50px;height:30px;border-radius:99px;background:rgba(120,130,150,.35);position:relative;transition:.2s;flex:none}
+.sw::after{content:&quot;&quot;;position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.sw.on{background:var(--green)}.sw.on::after{left:23px}
+.avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(145deg,#4a9bff,#1677FF);display:grid;place-items:center;font-size:32px;font-weight:700;color:#fff;margin:0 auto 10px}
+.hist{border-radius:22px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(245,158,11,.2);color:#d98a06}
+.hdr{padding:12px 20px 12px;font-size:30px;font-weight:700;letter-spacing:-.6px}
+.pgbar{position:absolute;left:0;right:0;bottom:0;z-index:8;padding:4px 12px 12px}
+.pgbar .glass{border-radius:30px;padding:6px 6px 4px}
+
+#lmap{position:absolute;inset:0;z-index:0;background:var(--map-land)}
+#mapwrap{isolation:isolate}
+.leaflet-container{font:inherit;background:var(--map-land)!important}
+.leaflet-control-attribution{background:var(--glass)!important;color:var(--muted)!important;font-size:9px!important;backdrop-filter:blur(10px);border-radius:8px 0 0 0}
+.leaflet-control-attribution a{color:var(--muted)!important}
+.leaflet-bottom{bottom:auto!important;top:calc(max(env(safe-area-inset-top),18px) + 78px)}
+.nomap{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:30px;line-height:1.5}
+.me-dot{width:22px;height:22px;border-radius:50%;background:#1677FF;border:3.5px solid #fff;box-shadow:0 2px 10px rgba(22,119,255,.6)}
+.sos-pin{position:relative;width:44px;height:56px;display:flex;flex-direction:column;align-items:center}
+.sos-pin b{background:#F04452;color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;box-shadow:0 3px 10px rgba(240,68,82,.6)}
+.sos-pin i{margin-top:8px;width:20px;height:20px;border-radius:50%;background:#F04452;border:3.5px solid #fff;box-shadow:0 0 0 0 rgba(240,68,82,.7);animation:ring 1.5s infinite}
+@keyframes ring{to{box-shadow:0 0 0 26px rgba(240,68,82,0)}}
+.car{width:30px;height:48px;transition:transform .3s linear;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4d5a;margin-right:6px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;phone&quot;&gt;
+  &lt;div class=&quot;demo-badge&quot; id=&quot;demoBadge&quot;&gt;Демо-режим · реальная помощь не вызывается&lt;/div&gt;
+  &lt;div class=&quot;toast glass&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;
+
+  &lt;!-- Splash --&gt;
+  &lt;section class=&quot;screen navy on&quot; id=&quot;splash&quot;&gt;&lt;div class=&quot;center&quot;&gt;
+    &lt;div class=&quot;logo&quot;&gt;&lt;svg width=&quot;56&quot; height=&quot;56&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;4.5&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;path d=&quot;M32 22v18M24 31h16&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+    &lt;h1 style=&quot;margin-top:20px;font-size:30px&quot;&gt;Safety SOS&lt;/h1&gt;
+  &lt;/div&gt;&lt;/section&gt;
+
+  &lt;!-- Welcome --&gt;
+  &lt;section class=&quot;screen navy&quot; id=&quot;welcome&quot;&gt;
+    &lt;div class=&quot;center&quot;&gt;
+      &lt;div class=&quot;logo glassy&quot;&gt;&lt;svg width=&quot;72&quot; height=&quot;72&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;3.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;path d=&quot;M32 22v18M24 31h16&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;h1&gt;Safety SOS&lt;/h1&gt;
+      &lt;p class=&quot;sub&quot; style=&quot;font-size:19px;color:#fff;font-weight:600;margin-bottom:10px&quot;&gt;Ваша безопасность — всегда рядом&lt;/p&gt;
+      &lt;p class=&quot;sub&quot;&gt;Быстрая передача SOS-сигнала и вашего местоположения&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pad safe-b&quot;&gt;&lt;button class=&quot;btn&quot; data-go=&quot;phone&quot;&gt;Продолжить&lt;/button&gt;
+    &lt;div class=&quot;legal&quot;&gt;Продолжая, вы принимаете Условия использования и Политику конфиденциальности&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Phone --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;phone-s&quot;&gt;&lt;div class=&quot;form&quot;&gt;
+    &lt;h2&gt;Ваш номер телефона&lt;/h2&gt;&lt;p class=&quot;sub2&quot;&gt;Введите номер для входа в Safety SOS&lt;/p&gt;
+    &lt;div class=&quot;field&quot;&gt;&lt;span&gt;+998&lt;/span&gt;&lt;input id=&quot;tel&quot; inputmode=&quot;numeric&quot; placeholder=&quot;XX XXX XX XX&quot; maxlength=&quot;12&quot; autocomplete=&quot;tel-national&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;err&quot; id=&quot;telErr&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;margin-top:auto&quot; class=&quot;safe-b&quot;&gt;&lt;button class=&quot;btn&quot; id=&quot;telBtn&quot; disabled&gt;Продолжить&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/section&gt;
+
+  &lt;!-- OTP --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;otp-s&quot;&gt;&lt;div class=&quot;form&quot;&gt;
+    &lt;h2&gt;Код из SMS&lt;/h2&gt;&lt;p class=&quot;sub2&quot; id=&quot;otpSub&quot;&gt;Введите 6 цифр&lt;/p&gt;
+    &lt;div class=&quot;otp&quot; id=&quot;otp&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;err&quot; id=&quot;otpErr&quot;&gt;&lt;/div&gt;
+    &lt;p style=&quot;font-size:13px;color:var(--muted);margin:0&quot;&gt;Демо-код: &lt;b&gt;123456&lt;/b&gt;&lt;/p&gt;
+    &lt;div style=&quot;margin-top:auto&quot; class=&quot;safe-b&quot;&gt;&lt;button class=&quot;btn&quot; id=&quot;otpBtn&quot; disabled&gt;Подтвердить&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/section&gt;
+
+  &lt;!-- Name --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;name-s&quot;&gt;&lt;div class=&quot;form&quot;&gt;
+    &lt;h2&gt;Давайте познакомимся&lt;/h2&gt;&lt;p class=&quot;sub2&quot;&gt;Телефон берётся из вашего аккаунта&lt;/p&gt;
+    &lt;div class=&quot;field&quot; style=&quot;margin-bottom:12px&quot;&gt;&lt;input id=&quot;fn&quot; placeholder=&quot;Имя&quot; style=&quot;font-size:18px&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;field&quot;&gt;&lt;input id=&quot;ln&quot; placeholder=&quot;Фамилия (необязательно)&quot; style=&quot;font-size:18px&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;err&quot; id=&quot;fnErr&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;margin-top:auto&quot; class=&quot;safe-b&quot;&gt;&lt;button class=&quot;btn&quot; id=&quot;nameBtn&quot;&gt;Продолжить&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/section&gt;
+
+  &lt;!-- Permissions --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;perm-s&quot;&gt;&lt;div class=&quot;form&quot; style=&quot;padding-top:64px&quot;&gt;
+    &lt;h2&gt;Настроим вашу безопасность&lt;/h2&gt;&lt;p class=&quot;sub2&quot;&gt;Разрешите геолокацию и микрофон. Браузер покажет два системных запроса; доступ можно изменить в настройках.&lt;/p&gt;
+    &lt;div class=&quot;cards&quot;&gt;
+      &lt;div class=&quot;pcard glass&quot;&gt;&lt;div class=&quot;ic&quot; style=&quot;background:var(--blue)&quot;&gt;&lt;svg width=&quot;24&quot; height=&quot;24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt;&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4&quot;/&gt;&lt;path d=&quot;M12 2v4M12 18v4M2 12h4M18 12h4&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Геолокация&lt;/b&gt;&lt;span&gt;Помогает определить ваше местоположение&lt;/span&gt;&lt;/div&gt;&lt;button data-perm=&quot;geo&quot;&gt;Разрешить&lt;/button&gt;&lt;/div&gt;
+      &lt;div class=&quot;pcard glass&quot;&gt;&lt;div class=&quot;ic&quot; style=&quot;background:var(--green)&quot;&gt;&lt;svg width=&quot;24&quot; height=&quot;24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt;&lt;rect x=&quot;9&quot; y=&quot;3&quot; width=&quot;6&quot; height=&quot;12&quot; rx=&quot;3&quot;/&gt;&lt;path d=&quot;M5 11a7 7 0 0 0 14 0M12 18v3&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Микрофон&lt;/b&gt;&lt;span&gt;Запись аудио во время активного SOS&lt;/span&gt;&lt;/div&gt;&lt;button data-perm=&quot;mic&quot;&gt;Разрешить&lt;/button&gt;&lt;/div&gt;
+      &lt;div class=&quot;pcard glass&quot;&gt;&lt;div class=&quot;ic&quot; style=&quot;background:#7c8aa5&quot;&gt;&lt;svg width=&quot;24&quot; height=&quot;24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt;&lt;path d=&quot;M4 8h3l2-3h6l2 3h3v11H4z&quot;/&gt;&lt;circle cx=&quot;12&quot; cy=&quot;13&quot; r=&quot;3.5&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Камера&lt;/b&gt;&lt;span&gt;Фото при необходимости&lt;/span&gt;&lt;/div&gt;&lt;button data-perm=&quot;cam&quot;&gt;Позже&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;safe-b&quot;&gt;&lt;button class=&quot;btn&quot; data-go=&quot;map&quot;&gt;Готово&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/section&gt;
+
+  &lt;!-- MAP --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;map-s&quot;&gt;
+    &lt;div id=&quot;mapwrap&quot;&gt;
+      &lt;div id=&quot;lmap&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;topbar safe-t&quot; style=&quot;top:0&quot;&gt;
+        &lt;button class=&quot;round glass&quot; id=&quot;menuBtn&quot; aria-label=&quot;Меню&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.2&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M3 6h16M3 11h16M3 16h10&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+        &lt;div class=&quot;cap glass&quot;&gt;&lt;i&gt;&lt;/i&gt;Ташкент&lt;/div&gt;
+        &lt;button class=&quot;round glass&quot; id=&quot;bellBtn&quot; aria-label=&quot;Уведомления&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M5 16V10a6 6 0 0 1 12 0v6l1.5 2H3.5zM9 20a2 2 0 0 0 4 0&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;round glass gps&quot; id=&quot;gpsBtn&quot; style=&quot;bottom:230px&quot; aria-label=&quot;Моё местоположение&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;#1677FF&quot; stroke-width=&quot;2.2&quot;&gt;&lt;circle cx=&quot;11&quot; cy=&quot;11&quot; r=&quot;4&quot;/&gt;&lt;path d=&quot;M11 1v4M11 17v4M1 11h4M17 11h4&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+
+      &lt;div class=&quot;glass&quot; id=&quot;geoBanner&quot; style=&quot;position:absolute;left:16px;right:16px;top:calc(max(env(safe-area-inset-top),18px) + 96px);z-index:5;border-radius:22px;padding:12px 14px;display:none;gap:12px;align-items:center&quot;&gt;&lt;div style=&quot;font-size:13px;line-height:1.3;flex:1;min-width:0&quot;&gt;&lt;b id=&quot;geoBannerT&quot;&gt;Геолокация выключена&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:var(--muted)&quot;&gt;Без неё диспетчер не увидит, где вы&lt;/span&gt;&lt;/div&gt;&lt;button class=&quot;btn&quot; id=&quot;geoBtn&quot; style=&quot;width:auto;height:40px;padding:0 14px;font-size:13px;border-radius:14px;flex:none&quot;&gt;Разрешить геолокацию&lt;/button&gt;&lt;/div&gt;
+      &lt;!-- idle dock --&gt;
+      &lt;div class=&quot;dock glass&quot; id=&quot;dock&quot;&gt;
+        &lt;div class=&quot;slider&quot; id=&quot;slider&quot;&gt;
+          &lt;div class=&quot;fill&quot; id=&quot;fill&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;label&quot; id=&quot;label&quot;&gt;Проведите вправо для SOS&lt;/div&gt;
+          &lt;div class=&quot;knob&quot; id=&quot;knob&quot; role=&quot;slider&quot; tabindex=&quot;0&quot; aria-label=&quot;Проведите вправо для SOS&quot;&gt;&lt;svg width=&quot;26&quot; height=&quot;26&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;5&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;button class=&quot;alt&quot; id=&quot;altSos&quot;&gt;Не могу свайпнуть — активировать SOS кнопкой&lt;/button&gt;
+        &lt;div class=&quot;tabs&quot;&gt;
+          &lt;button class=&quot;tab on&quot; data-tab=&quot;map&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot;&gt;&lt;path d=&quot;M11 20s6-5.2 6-10a6 6 0 0 0-12 0c0 4.8 6 10 6 10z&quot;/&gt;&lt;circle cx=&quot;11&quot; cy=&quot;10&quot; r=&quot;2&quot;/&gt;&lt;/svg&gt;Карта&lt;/button&gt;
+          &lt;button class=&quot;tab sos&quot; id=&quot;tabSos&quot;&gt;SOS&lt;/button&gt;
+          &lt;button class=&quot;tab&quot; data-tab=&quot;profile&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot;&gt;&lt;circle cx=&quot;11&quot; cy=&quot;8&quot; r=&quot;4&quot;/&gt;&lt;path d=&quot;M3 20c1-4 4-6 8-6s7 2 8 6&quot;/&gt;&lt;/svg&gt;Профиль&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- active sheet over map --&gt;
+      &lt;div id=&quot;mapsheet&quot; class=&quot;glass&quot;&gt;
+        &lt;div class=&quot;mrow&quot;&gt;
+          &lt;div class=&quot;lg&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;5&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class=&quot;sheetmsg&quot; id=&quot;sheetTitle&quot;&gt;&lt;b&gt;Мы ищем для вас бригаду безопасности&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;font-size:13px;color:var(--muted)&quot; id=&quot;sheetEta&quot;&gt;Ожидайте, сигнал отправляется…&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;mrow&quot; style=&quot;margin-top:12px&quot;&gt;&lt;div class=&quot;note&quot; style=&quot;margin:0;flex:1&quot; id=&quot;sheetNote&quot;&gt;Если вы в безопасности, отмените вызов&lt;/div&gt;&lt;div class=&quot;mic&quot; id=&quot;micIc&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot;&gt;&lt;rect x=&quot;8&quot; y=&quot;2&quot; width=&quot;6&quot; height=&quot;12&quot; rx=&quot;3&quot;/&gt;&lt;path d=&quot;M4 10a7 7 0 0 0 14 0M11 17v3&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;button class=&quot;cancel&quot; id=&quot;cancelBtn&quot;&gt;Отменить вызов&lt;/button&gt;
+        &lt;div style=&quot;display:flex;gap:8px;margin-top:4px&quot;&gt;
+          &lt;button class=&quot;btn ghost&quot; style=&quot;height:44px;font-size:14px;border-radius:16px&quot; id=&quot;toRed&quot;&gt;Экран тревоги&lt;/button&gt;
+          &lt;button class=&quot;btn ghost&quot; style=&quot;height:44px;font-size:14px;border-radius:16px;color:var(--red)&quot; id=&quot;call112&quot;&gt;Позвонить 112&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- PROFILE --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;profile-s&quot; style=&quot;background:var(--bg)&quot;&gt;
+    &lt;div class=&quot;safe-t&quot; style=&quot;padding-top:max(env(safe-area-inset-top),96px)&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;overflow:auto;flex:1&quot;&gt;
+      &lt;div style=&quot;text-align:center;padding:6px 0 18px&quot;&gt;&lt;div class=&quot;avatar&quot; id=&quot;av&quot;&gt;A&lt;/div&gt;&lt;b style=&quot;font-size:20px&quot; id=&quot;pName&quot;&gt;Пользователь&lt;/b&gt;&lt;div style=&quot;color:var(--muted);font-size:14px;margin-top:2px&quot; id=&quot;pPhone&quot;&gt;+998&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;list&quot;&gt;
+        &lt;div class=&quot;group glass&quot;&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowHist&quot;&gt;&lt;span&gt;📋&lt;/span&gt;История SOS&lt;small&gt;›&lt;/small&gt;&lt;/button&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowPerm&quot;&gt;&lt;span&gt;📍&lt;/span&gt;Разрешения&lt;small id=&quot;permSum&quot;&gt;›&lt;/small&gt;&lt;/button&gt;
+          &lt;div class=&quot;row&quot;&gt;&lt;span&gt;🤫&lt;/span&gt;Тихий SOS&lt;div class=&quot;sw&quot; id=&quot;swSilent&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;row&quot;&gt;&lt;span&gt;🔔&lt;/span&gt;Уведомления&lt;div class=&quot;sw on&quot; id=&quot;swNotif&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;row&quot;&gt;&lt;span&gt;🎙️&lt;/span&gt;Автозапись аудио&lt;div class=&quot;sw on&quot; id=&quot;swAudio&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;group glass&quot;&gt;
+          &lt;div class=&quot;row&quot;&gt;&lt;span&gt;🌙&lt;/span&gt;Тёмная тема&lt;div class=&quot;sw&quot; id=&quot;swDark&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowLang&quot;&gt;&lt;span&gt;🌐&lt;/span&gt;Язык&lt;small id=&quot;langV&quot;&gt;Русский&lt;/small&gt;&lt;/button&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowPriv&quot;&gt;&lt;span&gt;🔒&lt;/span&gt;Конфиденциальность&lt;small&gt;›&lt;/small&gt;&lt;/button&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowSup&quot;&gt;&lt;span&gt;💬&lt;/span&gt;Поддержка&lt;small&gt;›&lt;/small&gt;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;group glass&quot;&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowOut&quot; style=&quot;color:var(--red)&quot;&gt;&lt;span&gt;↩︎&lt;/span&gt;Выйти&lt;/button&gt;
+          &lt;button class=&quot;row&quot; id=&quot;rowDel&quot; style=&quot;color:var(--red)&quot;&gt;&lt;span&gt;🗑️&lt;/span&gt;Удалить аккаунт&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;p style=&quot;font-size:12px;color:var(--muted);text-align:center;margin:0 10px&quot;&gt;Тихий SOS убирает звуки и вибрацию приложения, но системные индикаторы микрофона и геолокации ОС скрыть нельзя.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pgbar&quot;&gt;&lt;div class=&quot;glass&quot;&gt;&lt;div class=&quot;tabs&quot;&gt;
+      &lt;button class=&quot;tab&quot; data-tab=&quot;map&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot;&gt;&lt;path d=&quot;M11 20s6-5.2 6-10a6 6 0 0 0-12 0c0 4.8 6 10 6 10z&quot;/&gt;&lt;circle cx=&quot;11&quot; cy=&quot;10&quot; r=&quot;2&quot;/&gt;&lt;/svg&gt;Карта&lt;/button&gt;
+      &lt;button class=&quot;tab sos&quot; data-tab=&quot;map&quot;&gt;SOS&lt;/button&gt;
+      &lt;button class=&quot;tab on&quot; data-tab=&quot;profile&quot;&gt;&lt;svg width=&quot;22&quot; height=&quot;22&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot;&gt;&lt;circle cx=&quot;11&quot; cy=&quot;8&quot; r=&quot;4&quot;/&gt;&lt;path d=&quot;M3 20c1-4 4-6 8-6s7 2 8 6&quot;/&gt;&lt;/svg&gt;Профиль&lt;/button&gt;
+    &lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- HISTORY --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;hist-s&quot; style=&quot;background:var(--bg)&quot;&gt;
+    &lt;div style=&quot;padding-top:max(env(safe-area-inset-top),96px)&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;display:flex;align-items:center;gap:6px;padding:0 10px&quot;&gt;&lt;button class=&quot;round&quot; data-go=&quot;profile&quot; aria-label=&quot;Назад&quot; style=&quot;font-size:26px&quot;&gt;‹&lt;/button&gt;&lt;div class=&quot;hdr&quot; style=&quot;padding-left:2px&quot;&gt;История SOS&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;list&quot; id=&quot;histList&quot; style=&quot;padding-bottom:40px&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  
+  &lt;!-- PERMISSIONS SETTINGS --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;perm-set&quot; style=&quot;background:var(--bg)&quot;&gt;
+    &lt;div style=&quot;padding-top:max(env(safe-area-inset-top),96px)&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;display:flex;align-items:center;gap:6px;padding:0 10px&quot;&gt;&lt;button class=&quot;round&quot; data-go=&quot;profile&quot; aria-label=&quot;Назад&quot; style=&quot;font-size:26px&quot;&gt;‹&lt;/button&gt;&lt;div class=&quot;hdr&quot; style=&quot;padding-left:2px&quot;&gt;Разрешения&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;list&quot; id=&quot;permList&quot; style=&quot;padding-bottom:30px;overflow:auto&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- ACTIVE SOS --&gt;
+  &lt;section class=&quot;screen&quot; id=&quot;active&quot;&gt;
+    &lt;div style=&quot;padding-top:max(env(safe-area-inset-top),100px)&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;center&quot; style=&quot;justify-content:flex-start;padding-top:0&quot;&gt;
+      &lt;div class=&quot;shield-glow&quot;&gt;&lt;svg width=&quot;54&quot; height=&quot;54&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;3.6&quot; stroke-linejoin=&quot;round&quot; stroke-linecap=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;path d=&quot;M32 22v18M24 31h16&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;h2 style=&quot;margin-top:12px;color:#fff;font-size:22px&quot;&gt;Предупреждение.&lt;br&gt;Активный вызов!&lt;/h2&gt;
+      &lt;p class=&quot;sub&quot; id=&quot;actSub&quot;&gt;SOS активирован. Ваше местоположение передаётся&lt;/p&gt;
+      &lt;div class=&quot;status&quot; id=&quot;statusList&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;chips&quot;&gt;
+        &lt;div class=&quot;chip&quot;&gt;&lt;b id=&quot;chGps&quot;&gt;GPS&lt;/b&gt;&lt;span id=&quot;chGpsV&quot;&gt;Местоположение обновлено&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;chip&quot;&gt;&lt;b&gt;Микрофон&lt;/b&gt;&lt;span id=&quot;chMic&quot;&gt;—&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;chip&quot;&gt;&lt;b&gt;Связь&lt;/b&gt;&lt;span id=&quot;chNet&quot;&gt;На связи&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pad safe-b&quot; style=&quot;display:flex;flex-direction:column;gap:10px&quot;&gt;
+      &lt;button class=&quot;abtn&quot; id=&quot;showMap&quot;&gt;Показать на карте&lt;/button&gt;
+      &lt;button class=&quot;abtn call&quot; id=&quot;call112b&quot;&gt;Экстренный звонок 112&lt;/button&gt;
+      &lt;button class=&quot;abtn holdwrap&quot; id=&quot;holdEnd&quot;&gt;&lt;div class=&quot;hf&quot;&gt;&lt;/div&gt;&lt;span&gt;Удерживайте, чтобы завершить SOS&lt;/span&gt;&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Completed --&gt;
+  &lt;section class=&quot;screen navy&quot; id=&quot;done&quot;&gt;
+    &lt;div class=&quot;center&quot;&gt;
+      &lt;div class=&quot;logo&quot; style=&quot;background:linear-gradient(145deg,#34d399,#059669)&quot;&gt;&lt;svg width=&quot;52&quot; height=&quot;52&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; viewBox=&quot;0 0 52 52&quot;&gt;&lt;path d=&quot;M12 27l10 10 18-20&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;
+      &lt;h1 style=&quot;font-size:28px&quot; id=&quot;doneT&quot;&gt;Ситуация завершена&lt;/h1&gt;
+      &lt;p class=&quot;sub&quot; id=&quot;doneS&quot;&gt;Вы в безопасности. Родители и контакты уведомлены.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;pad safe-b&quot;&gt;&lt;button class=&quot;btn&quot; data-go=&quot;map&quot;&gt;На карту&lt;/button&gt;&lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+(()=&gt;{
+&#x27;use strict&#x27;;
+const $=s=&gt;document.querySelector(s),$$=s=&gt;[...document.querySelectorAll(s)];
+const S={silent:false,notif:true,audio:true,dark:false,name:&#x27;&#x27;,phone:&#x27;&#x27;,hist:[],auth:false};
+try{Object.assign(S,JSON.parse(localStorage.getItem(&#x27;ssos_user&#x27;)||&#x27;{}&#x27;))}catch(e){}
+const save=()=&gt;{try{localStorage.setItem(&#x27;ssos_user&#x27;,JSON.stringify({silent:S.silent,notif:S.notif,audio:S.audio,dark:S.dark,hist:S.hist,name:S.name,phone:S.phone,auth:S.auth}))}catch(e){}};
+const vib=p=&gt;{if(!S.silent&amp;&amp;navigator.vibrate)try{navigator.vibrate(p)}catch(e){}};
+function toast(t,ms=2800){const e=$(&#x27;#toast&#x27;);e.textContent=t;e.classList.add(&#x27;on&#x27;);clearTimeout(toast.t);toast.t=setTimeout(()=&gt;e.classList.remove(&#x27;on&#x27;),ms)}
+const hasMap=()=&gt;typeof window.L!==&#x27;undefined&#x27;;
+const TASH=[41.3111,69.2797];
+const rad=d=&gt;d*Math.PI/180;
+function dist(a,b){const R=6371000,dLa=rad(b[0]-a[0]),dLo=rad(b[1]-a[1]);const h=Math.sin(dLa/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+let SOS=null;
+
+/* ===================== BUS (связь с панелью полиции) ===================== */
+const seen=new Set();
+const BUS={ch:null,fn:null,
+  init(fn){this.fn=fn;try{this.ch=new BroadcastChannel(&#x27;safety-sos-v1&#x27;);this.ch.onmessage=e=&gt;this.recv(e.data)}catch(e){}
+    addEventListener(&#x27;storage&#x27;,e=&gt;{if(e.key===&#x27;ssos_msg&#x27;&amp;&amp;e.newValue){try{this.recv(JSON.parse(e.newValue))}catch(x){}}})},
+  recv(m){if(!m||!m.n||seen.has(m.n))return;seen.add(m.n);if(seen.size&gt;800)seen.delete(seen.values().next().value);this.fn&amp;&amp;this.fn(m)},
+  send(m,big){m.n=Math.random().toString(36).slice(2)+Date.now().toString(36);m.ts=Date.now();seen.add(m.n);
+    try{this.ch&amp;&amp;this.ch.postMessage(m)}catch(e){}
+    if(!big){try{localStorage.setItem(&#x27;ssos_msg&#x27;,JSON.stringify(m))}catch(e){}}}
+};
+
+/* ===================== Навигация ===================== */
+const MAP={welcome:&#x27;welcome&#x27;,phone:&#x27;phone-s&#x27;,otp:&#x27;otp-s&#x27;,name:&#x27;name-s&#x27;,perm:&#x27;perm-s&#x27;,map:&#x27;map-s&#x27;,profile:&#x27;profile-s&#x27;,hist:&#x27;hist-s&#x27;,permset:&#x27;perm-set&#x27;};
+function go(id){
+  $$(&#x27;.screen&#x27;).forEach(s=&gt;s.classList.remove(&#x27;on&#x27;));$(&#x27;#&#x27;+id).classList.add(&#x27;on&#x27;);
+  $(&#x27;#demoBadge&#x27;).style.display=[&#x27;map-s&#x27;,&#x27;profile-s&#x27;,&#x27;hist-s&#x27;,&#x27;active&#x27;,&#x27;perm-set&#x27;].includes(id)?&#x27;block&#x27;:&#x27;none&#x27;;
+  if(id===&#x27;map-s&#x27;){initMap();setTimeout(()=&gt;{map&amp;&amp;map.invalidateSize();updateBanner()},60)}
+  if(id===&#x27;perm-set&#x27;){refreshPerms()}
+}
+$$(&#x27;[data-go]&#x27;).forEach(b=&gt;b.onclick=()=&gt;{const k=b.dataset.go;
+  if(k===&#x27;map&#x27;){if(b.closest(&#x27;#perm-s&#x27;)){S.auth=true;save()}showIdle()}
+  go(MAP[k]||k);if(k===&#x27;profile&#x27;)refreshProfile()});
+$$(&#x27;[data-tab]&#x27;).forEach(b=&gt;b.onclick=()=&gt;{if(b.dataset.tab===&#x27;profile&#x27;){refreshProfile();go(&#x27;profile-s&#x27;)}else{if(!SOS)showIdle();go(&#x27;map-s&#x27;)}});
+
+function applyTheme(){document.documentElement.dataset.theme=S.dark?&#x27;dark&#x27;:&#x27;light&#x27;;document.body.classList.toggle(&#x27;silent&#x27;,S.silent);setTiles()}
+
+/* ===================== Разрешения ===================== */
+const P={geo:&#x27;prompt&#x27;,mic:&#x27;prompt&#x27;,notif:&#x27;prompt&#x27;};const PS={};
+async function queryPerm(name,key){
+  try{if(!PS[name]){PS[name]=await navigator.permissions.query({name});PS[name].onchange=()=&gt;refreshPerms()}P[key]=PS[name].state}
+  catch(e){/* браузер не поддерживает Permissions API для этого разрешения */}
+}
+async function refreshPerms(){
+  await queryPerm(&#x27;geolocation&#x27;,&#x27;geo&#x27;);await queryPerm(&#x27;microphone&#x27;,&#x27;mic&#x27;);
+  if(&#x27;Notification&#x27; in window)P.notif=Notification.permission===&#x27;default&#x27;?&#x27;prompt&#x27;:Notification.permission;
+  else P.notif=&#x27;unsupported&#x27;;
+  if(!navigator.geolocation)P.geo=&#x27;unsupported&#x27;;
+  if(!navigator.mediaDevices)P.mic=&#x27;unsupported&#x27;;
+  if(P.geo===&#x27;granted&#x27;)startGeo();
+  updateBanner();permSummary();renderPerms();syncOnboard();
+}
+const stLabel={granted:[&#x27;Разрешено&#x27;,&#x27;var(--green)&#x27;],denied:[&#x27;Запрещено&#x27;,&#x27;var(--red)&#x27;],prompt:[&#x27;Не запрошено&#x27;,&#x27;var(--muted)&#x27;],unsupported:[&#x27;Не поддерживается&#x27;,&#x27;var(--muted)&#x27;]};
+function permSummary(){const n=[&#x27;geo&#x27;,&#x27;mic&#x27;,&#x27;notif&#x27;].filter(k=&gt;P[k]===&#x27;granted&#x27;).length;const e=$(&#x27;#permSum&#x27;);if(e)e.textContent=n+&#x27; из 3 ›&#x27;}
+function requestGeo(){return new Promise(async res=&gt;{
+  await queryPerm(&#x27;geolocation&#x27;,&#x27;geo&#x27;);
+  if(P.geo===&#x27;granted&#x27;){startGeo();res(&#x27;granted&#x27;);return}
+  if(P.geo===&#x27;denied&#x27;){res(&#x27;denied&#x27;);return}
+  if(!navigator.geolocation){P.geo=&#x27;unsupported&#x27;;res(&#x27;unsupported&#x27;);return}
+  navigator.geolocation.getCurrentPosition(p=&gt;{P.geo=&#x27;granted&#x27;;onPos(p);startGeo();refreshPerms();res(&#x27;granted&#x27;)},
+    e=&gt;{if(e.code===1){P.geo=&#x27;denied&#x27;}refreshPerms();res(e.code===1?&#x27;denied&#x27;:&#x27;error&#x27;)},{enableHighAccuracy:true,timeout:12000,maximumAge:0})})}
+async function requestMic(){
+  await queryPerm(&#x27;microphone&#x27;,&#x27;mic&#x27;);
+  if(P.mic===&#x27;granted&#x27;)return &#x27;granted&#x27;;
+  if(P.mic===&#x27;denied&#x27;)return &#x27;denied&#x27;;
+  if(!navigator.mediaDevices){P.mic=&#x27;unsupported&#x27;;return&#x27;unsupported&#x27;}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=&gt;t.stop());P.mic=&#x27;granted&#x27;;refreshPerms();return&#x27;granted&#x27;}
+  catch(e){if(e.name===&#x27;NotAllowedError&#x27;||e.name===&#x27;SecurityError&#x27;)P.mic=&#x27;denied&#x27;;refreshPerms();return P.mic}}
+async function requestNotif(){
+  if(!(&#x27;Notification&#x27; in window))return;
+  try{const r=await Notification.requestPermission();P.notif=r===&#x27;default&#x27;?&#x27;prompt&#x27;:r}catch(e){}refreshPerms()}
+const HELP={
+  geo:&#x27;Доступ заблокирован. Нажмите значок замка рядом с адресом → «Настройки сайта» → «Геолокация» → «Разрешить». На телефоне: Настройки → Приложения → ваш браузер → Разрешения → Геолокация. Затем нажмите «Проверить снова».&#x27;,
+  mic:&#x27;Доступ заблокирован. Нажмите значок замка рядом с адресом → «Настройки сайта» → «Микрофон» → «Разрешить». На телефоне: Настройки → Приложения → ваш браузер → Разрешения → Микрофон. Затем нажмите «Проверить снова».&#x27;,
+  notif:&#x27;Уведомления заблокированы. Разрешите их в настройках сайта (значок замка рядом с адресом) и нажмите «Проверить снова».&#x27;};
+function renderPerms(){
+  const box=$(&#x27;#permList&#x27;);if(!box)return;
+  if(!box.dataset.init)box.dataset.init=1;
+  const items=[[&#x27;geo&#x27;,&#x27;📍&#x27;,&#x27;var(--blue)&#x27;,&#x27;Геолокация&#x27;,&#x27;Передаёт ваши координаты диспетчеру во время SOS&#x27;],[&#x27;mic&#x27;,&#x27;🎙️&#x27;,&#x27;var(--green)&#x27;,&#x27;Микрофон&#x27;,&#x27;Автоматическая запись звука сразу после активации SOS&#x27;],[&#x27;notif&#x27;,&#x27;🔔&#x27;,&#x27;#a855f7&#x27;,&#x27;Уведомления&#x27;,&#x27;Сообщения о статусе вызова и приезде экипажа&#x27;]];
+  box.innerHTML=items.map(([k,ic,col,t,d])=&gt;{const st=P[k]||&#x27;prompt&#x27;;const [lab,c]=stLabel[st]||stLabel.prompt;
+    const btn=st===&#x27;granted&#x27;?&#x27;&#x27;:st===&#x27;denied&#x27;?&#x27;&#x27;:st===&#x27;unsupported&#x27;?&#x27;&#x27;:`&lt;button data-req=&quot;${k}&quot;&gt;Разрешить&lt;/button&gt;`;
+    return `&lt;div class=&quot;pcard glass&quot; style=&quot;flex-wrap:wrap&quot;&gt;&lt;div class=&quot;ic&quot; style=&quot;background:${col};font-size:22px&quot;&gt;${ic}&lt;/div&gt;&lt;div style=&quot;flex:1;min-width:0&quot;&gt;&lt;b&gt;${t}&lt;/b&gt;&lt;span&gt;${d}&lt;/span&gt;&lt;/div&gt;
+    &lt;div style=&quot;display:flex;flex-direction:column;align-items:flex-end;gap:6px&quot;&gt;&lt;em style=&quot;font-style:normal;font-size:12px;font-weight:700;color:${c}&quot;&gt;${lab}&lt;/em&gt;${btn}&lt;/div&gt;
+    ${st===&#x27;denied&#x27;?`&lt;div style=&quot;flex-basis:100%;font-size:13px;line-height:1.4;color:var(--muted);background:rgba(240,68,82,.08);border-radius:14px;padding:10px 12px&quot;&gt;${HELP[k]}&lt;/div&gt;`:&#x27;&#x27;}&lt;/div&gt;`}).join(&#x27;&#x27;)+
+    `&lt;button class=&quot;btn ghost&quot; id=&quot;permRecheck&quot;&gt;Проверить снова&lt;/button&gt;
+     &lt;p style=&quot;font-size:12px;color:var(--muted);margin:0 6px;line-height:1.4&quot;&gt;Запись звука и геолокация включаются только при активном SOS и только если вы дали разрешение. Скрытой записи нет: индикатор записи показывает сама система.&lt;/p&gt;`;
+  $$(&#x27;#permList [data-req]&#x27;).forEach(b=&gt;b.onclick=async()=&gt;{const k=b.dataset.req;
+    if(k===&#x27;geo&#x27;){const r=await requestGeo();if(r===&#x27;denied&#x27;)toast(&#x27;Геолокация заблокирована. Откройте настройки сайта&#x27;)}
+    if(k===&#x27;mic&#x27;){const r=await requestMic();if(r===&#x27;denied&#x27;)toast(&#x27;Микрофон заблокирован. Откройте настройки сайта&#x27;)}
+    if(k===&#x27;notif&#x27;)requestNotif()});
+  const rc=$(&#x27;#permRecheck&#x27;);if(rc)rc.onclick=async()=&gt;{await refreshPerms();toast(&#x27;Статусы обновлены&#x27;)};
+}
+function syncOnboard(){
+  $$(&#x27;[data-perm]&#x27;).forEach(b=&gt;{const k=b.dataset.perm;const st=k===&#x27;geo&#x27;?P.geo:k===&#x27;mic&#x27;?P.mic:null;
+    if(st===&#x27;granted&#x27;){b.textContent=&#x27;Разрешено&#x27;;b.classList.add(&#x27;ok&#x27;)}
+    else if(st===&#x27;denied&#x27;){b.textContent=&#x27;Заблокировано&#x27;;b.classList.remove(&#x27;ok&#x27;)}})}
+$$(&#x27;[data-perm]&#x27;).forEach(b=&gt;b.onclick=async()=&gt;{const k=b.dataset.perm;
+  if(k===&#x27;geo&#x27;){const r=await requestGeo();if(r===&#x27;denied&#x27;)toast(&#x27;Заблокировано. Включите в настройках сайта&#x27;)}
+  else if(k===&#x27;mic&#x27;){const r=await requestMic();if(r===&#x27;denied&#x27;)toast(&#x27;Заблокировано. Включите в настройках сайта&#x27;)}
+  else{b.textContent=&#x27;Отложено&#x27;;b.classList.add(&#x27;ok&#x27;)}});
+
+/* ===================== Карта (Leaflet) ===================== */
+let map=null,fitCar=true,meTrail=null,meM=null,meC=null,sosM=null,carM=null,routeL=null,trailL=null,following=true;
+const ICON={
+  me:()=&gt;L.divIcon({className:&#x27;&#x27;,html:&#x27;&lt;div class=&quot;me-dot&quot;&gt;&lt;/div&gt;&#x27;,iconSize:[22,22],iconAnchor:[11,11]}),
+  sos:()=&gt;L.divIcon({className:&#x27;&#x27;,html:&#x27;&lt;div class=&quot;sos-pin&quot;&gt;&lt;b&gt;SOS&lt;/b&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&#x27;,iconSize:[44,56],iconAnchor:[22,50]}),
+  car:()=&gt;L.divIcon({className:&#x27;&#x27;,html:&#x27;&lt;div class=&quot;car&quot;&gt;&lt;svg viewBox=&quot;0 0 40 64&quot; width=&quot;30&quot; height=&quot;48&quot;&gt;&lt;rect x=&quot;6&quot; y=&quot;4&quot; width=&quot;28&quot; height=&quot;56&quot; rx=&quot;10&quot; fill=&quot;#f8fafc&quot; stroke=&quot;#0b1b2e&quot; stroke-width=&quot;2.5&quot;/&gt;&lt;rect x=&quot;10&quot; y=&quot;16&quot; width=&quot;20&quot; height=&quot;12&quot; rx=&quot;3&quot; fill=&quot;#1d3b63&quot;/&gt;&lt;rect x=&quot;10&quot; y=&quot;40&quot; width=&quot;20&quot; height=&quot;9&quot; rx=&quot;3&quot; fill=&quot;#1d3b63&quot;/&gt;&lt;rect x=&quot;11&quot; y=&quot;9&quot; width=&quot;8&quot; height=&quot;5&quot; rx=&quot;2&quot; fill=&quot;#F04452&quot;/&gt;&lt;rect x=&quot;21&quot; y=&quot;9&quot; width=&quot;8&quot; height=&quot;5&quot; rx=&quot;2&quot; fill=&quot;#1677FF&quot;/&gt;&lt;rect x=&quot;6&quot; y=&quot;30&quot; width=&quot;28&quot; height=&quot;6&quot; fill=&quot;#10B981&quot; opacity=&quot;.85&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;&#x27;,iconSize:[30,48],iconAnchor:[15,24]})
+};
+function isDark(){return !!S.dark}
+const TL=[];function setTiles(){if(!map||!hasMap())return;TL.forEach(l=&gt;map.removeLayer(l));TL.length=0;const E=&#x27;https://server.arcgisonline.com/ArcGIS/rest/services/&#x27;;const at=&#x27;Tiles © Esri&#x27;;if(isDark()){TL.push(L.tileLayer(E+&#x27;Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,maxNativeZoom:16,attribution:at}),L.tileLayer(E+&#x27;Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,maxNativeZoom:16}))}else TL.push(L.tileLayer(E+&#x27;World_Street_Map/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,attribution:at}));TL.forEach(l=&gt;l.addTo(map))}
+function initMap(){
+  if(map)return;
+  if(!hasMap()){$(&#x27;#lmap&#x27;).innerHTML=&#x27;&lt;div class=&quot;nomap&quot;&gt;Карта не загрузилась.&lt;br&gt;Проверьте подключение к интернету и обновите страницу.&lt;/div&gt;&#x27;;return}
+  map=L.map(&#x27;lmap&#x27;,{zoomControl:false,attributionControl:true,zoomSnap:.5}).setView(G.pos||TASH,G.pos?16:13);
+  map.attributionControl.setPrefix(false);
+  setTiles();
+  map.on(&#x27;dragstart&#x27;,()=&gt;{following=false;fitCar=false;setFollowUi()});
+  if(G.pos)updMe();
+  if(SOS)restoreSosLayers();
+}
+function updMe(){
+  if(!map||!G.pos)return;
+  if(!meM){meM=L.marker(G.pos,{icon:ICON.me(),interactive:false,zIndexOffset:500}).addTo(map);meC=L.circle(G.pos,{radius:G.acc||50,color:&#x27;#1677FF&#x27;,weight:1,fillColor:&#x27;#1677FF&#x27;,fillOpacity:.12,interactive:false}).addTo(map)}
+  else{meM.setLatLng(G.pos);meC.setLatLng(G.pos);meC.setRadius(G.acc||50)}
+  if(SOS&amp;&amp;sosM)sosM.setLatLng(G.pos)
+}
+function restoreSosLayers(){if(!map)return;const p=G.pos||SOS.pos;if(p&amp;&amp;!sosM)sosM=L.marker(p,{icon:ICON.sos(),interactive:false,zIndexOffset:900}).addTo(map)}
+
+/* ===================== Геолокация ===================== */
+const G={pos:null,acc:null,ts:0,watch:null,centered:false};
+function onPos(p){
+  G.pos=[p.coords.latitude,p.coords.longitude];G.acc=p.coords.accuracy;G.ts=Date.now();
+  if(P.geo!==&#x27;granted&#x27;){P.geo=&#x27;granted&#x27;;permSummary()}
+  updMe();
+  if(map){
+    if(!G.centered){map.setView(G.pos,16);G.centered=true}
+    else if(following&amp;&amp;!(SOS&amp;&amp;carM)){map.panTo(G.pos,{animate:true,duration:.6})}
+    if(!G.lastTr||dist(G.lastTr,G.pos)&gt;4){G.lastTr=G.pos;G.trail=(G.trail||[]).concat([G.pos]).slice(-300);
+      if(!meTrail)meTrail=L.polyline(G.trail,{color:&#x27;#1677FF&#x27;,weight:4,opacity:.45,interactive:false}).addTo(map);else meTrail.setLatLngs(G.trail)}
+  }
+  updateBanner();
+  if(SOS){SOS.approx=false;restoreSosLayers();pushLoc();$(&#x27;#chGpsV&#x27;).textContent=&#x27;Обновлено &#x27;+new Date().toLocaleTimeString(&#x27;ru-RU&#x27;)}
+}
+function onGeoErr(e){if(e.code===1){P.geo=&#x27;denied&#x27;;updateBanner();renderPerms();permSummary();if(SOS)$(&#x27;#chGpsV&#x27;).textContent=&#x27;Доступ к GPS запрещён&#x27;}else if(SOS)$(&#x27;#chGpsV&#x27;).textContent=&#x27;GPS недоступен, последняя позиция&#x27;}
+function startGeo(){if(!navigator.geolocation||G.watch!=null||P.geo!==&#x27;granted&#x27;)return;G.watch=navigator.geolocation.watchPosition(onPos,onGeoErr,{enableHighAccuracy:true,maximumAge:1000,timeout:20000})}
+function setFollowUi(){const b=$(&#x27;#gpsBtn&#x27;);if(b)b.style.outline=following?&#x27;2px solid #1677FF&#x27;:&#x27;none&#x27;}
+function updateBanner(){const b=$(&#x27;#geoBanner&#x27;);if(!b)return;
+  const show=P.geo!==&#x27;granted&#x27;&amp;&amp;P.geo!==&#x27;unsupported&#x27;&amp;&amp;!SOS&amp;&amp;$(&#x27;#map-s&#x27;).classList.contains(&#x27;on&#x27;);
+  b.style.display=show?&#x27;flex&#x27;:&#x27;none&#x27;;
+  $(&#x27;#geoBannerT&#x27;).textContent=P.geo===&#x27;denied&#x27;?&#x27;Геолокация заблокирована&#x27;:&#x27;Геолокация выключена&#x27;;
+  $(&#x27;#geoBtn&#x27;).textContent=P.geo===&#x27;denied&#x27;?&#x27;Как включить&#x27;:&#x27;Разрешить геолокацию&#x27;}
+$(&#x27;#geoBtn&#x27;).onclick=async()=&gt;{if(P.geo===&#x27;denied&#x27;){go(&#x27;perm-set&#x27;);return}const r=await requestGeo();if(r===&#x27;denied&#x27;)toast(&#x27;Геолокация заблокирована. Откройте настройки&#x27;)};
+$(&#x27;#gpsBtn&#x27;).onclick=async()=&gt;{vib(10);if(G.pos&amp;&amp;map){following=true;fitCar=true;setFollowUi();map.flyTo(G.pos,16,{duration:.6})}else{const r=await requestGeo();if(r===&#x27;denied&#x27;)toast(&#x27;Геолокация заблокирована. Откройте «Профиль → Разрешения»&#x27;);else if(r!==&#x27;granted&#x27;)toast(&#x27;Не удалось определить местоположение&#x27;)}};
+
+/* ===================== Ползунок SOS ===================== */
+const slider=$(&#x27;#slider&#x27;),knob=$(&#x27;#knob&#x27;),fill=$(&#x27;#fill&#x27;),label=$(&#x27;#label&#x27;);
+let drag=false,sx=0,x=0,maxX=0;
+const setX=v=&gt;{x=Math.max(0,Math.min(maxX,v));knob.style.transform=`translateX(${x}px)`;fill.style.width=(x+61)+&#x27;px&#x27;;label.style.opacity=1-x/(maxX*.6)};
+function reset(anim=true){if(anim){knob.style.transition=fill.style.transition=&#x27;all .4s cubic-bezier(.3,1.6,.5,1)&#x27;;setTimeout(()=&gt;{knob.style.transition=fill.style.transition=&#x27;&#x27;},420)}setX(0)}
+knob.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{if(SOS)return;maxX=slider.clientWidth-66;drag=true;sx=e.clientX-x;knob.setPointerCapture(e.pointerId);knob.style.cursor=&#x27;grabbing&#x27;});
+knob.addEventListener(&#x27;pointermove&#x27;,e=&gt;{if(!drag)return;const nx=e.clientX-sx;if(Math.floor(nx/20)!==Math.floor(x/20))vib(4);setX(nx)});
+const endDrag=()=&gt;{if(!drag)return;drag=false;knob.style.cursor=&#x27;grab&#x27;;if(x&gt;=maxX*.9){setX(maxX);vib(40);activate(&#x27;swipe&#x27;)}else reset()};
+knob.addEventListener(&#x27;pointerup&#x27;,endDrag);knob.addEventListener(&#x27;pointercancel&#x27;,endDrag);
+knob.addEventListener(&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Enter&#x27;||e.key===&#x27; &#x27;){e.preventDefault();activate(&#x27;keyboard&#x27;)}});
+$(&#x27;#altSos&#x27;).onclick=()=&gt;{if(confirm(&#x27;Активировать SOS сейчас?&#x27;))activate(&#x27;accessible&#x27;)};
+$(&#x27;#tabSos&#x27;).onclick=()=&gt;toast(&#x27;Для SOS проведите ползунок вправо. Случайное нажатие не сработает&#x27;);
+
+/* ===================== Аудио: запись сразу после SOS ===================== */
+const A={stream:null,rec:null,ctx:null,an:null,proc:null,live:false,seq:0,t0:0,tm:null,lv:null,mime:&#x27;&#x27;};
+async function startAudio(){
+  const chip=$(&#x27;#chMic&#x27;);
+  if(!S.audio){chip.textContent=&#x27;Выключена в настройках&#x27;;return}
+  if(!navigator.mediaDevices||!window.MediaRecorder){chip.textContent=&#x27;Не поддерживается&#x27;;return}
+  try{
+    // если разрешение уже выдано, запись стартует мгновенно, без диалогов
+    A.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+    if(!SOS){A.stream.getTracks().forEach(t=&gt;t.stop());A.stream=null;return}
+    P.mic=&#x27;granted&#x27;;
+    const cand=[&#x27;audio/webm;codecs=opus&#x27;,&#x27;audio/webm&#x27;,&#x27;audio/mp4&#x27;,&#x27;audio/ogg;codecs=opus&#x27;];
+    A.mime=cand.find(m=&gt;MediaRecorder.isTypeSupported(m))||&#x27;&#x27;;
+    A.rec=new MediaRecorder(A.stream,A.mime?{mimeType:A.mime}:undefined);A.seq=0;A.t0=Date.now();
+    A.rec.ondataavailable=async e=&gt;{if(!e.data||!e.data.size||!SOS)return;const buf=await e.data.arrayBuffer();BUS.send({t:&#x27;audio&#x27;,id:SOS.id,seq:A.seq++,mime:A.rec.mimeType||A.mime,buf},true)};
+    A.rec.start(1000);
+    BUS.send({t:&#x27;audio-state&#x27;,id:SOS.id,on:true});
+    // уровень звука
+    try{A.ctx=new (window.AudioContext||window.webkitAudioContext)();const src=A.ctx.createMediaStreamSource(A.stream);A.an=A.ctx.createAnalyser();A.an.fftSize=512;src.connect(A.an);
+      // живой звук для диспетчера: 8 кГц PCM, отправляется только когда диспетчер нажал «Слушать онлайн»
+      A.proc=A.ctx.createScriptProcessor(4096,1,1);const mute=A.ctx.createGain();mute.gain.value=0;src.connect(A.proc);A.proc.connect(mute);mute.connect(A.ctx.destination);
+      A.proc.onaudioprocess=e=&gt;{if(!A.live||!SOS)return;const inp=e.inputBuffer.getChannelData(0),ratio=A.ctx.sampleRate/8000,n=Math.floor(inp.length/ratio),out=new Int16Array(n);
+        for(let i=0;i&lt;n;i++){let sum=0,c=0;for(let j=Math.floor(i*ratio);j&lt;Math.floor((i+1)*ratio)&amp;&amp;j&lt;inp.length;j++){sum+=inp[j];c++}out[i]=Math.max(-1,Math.min(1,sum/(c||1)))*32767}
+        BUS.send({t:&#x27;pcm&#x27;,id:SOS.id,rate:8000,buf:out.buffer},true)};
+      const buf=new Uint8Array(A.an.fftSize);A.lv=setInterval(()=&gt;{A.an.getByteTimeDomainData(buf);let m=0;for(const v of buf)m=Math.max(m,Math.abs(v-128));if(SOS)BUS.send({t:&#x27;level&#x27;,id:SOS.id,v:Math.min(1,m/90)},true)},400)}catch(e){}
+    const tick=()=&gt;{const s=Math.floor((Date.now()-A.t0)/1000);chip.innerHTML=&#x27;&lt;span class=&quot;rec&quot;&gt;&lt;/span&gt;Запись &#x27;+Math.floor(s/60)+&#x27;:&#x27;+String(s%60).padStart(2,&#x27;0&#x27;)};tick();A.tm=setInterval(tick,1000);
+  }catch(e){
+    chip.textContent=(e.name===&#x27;NotAllowedError&#x27;)?&#x27;Нет разрешения&#x27;:&#x27;Недоступна&#x27;;
+    if(e.name===&#x27;NotAllowedError&#x27;){P.mic=&#x27;denied&#x27;;renderPerms()}
+  }
+}
+function stopAudio(){
+  clearInterval(A.tm);clearInterval(A.lv);
+  try{if(A.rec&amp;&amp;A.rec.state!==&#x27;inactive&#x27;)A.rec.stop()}catch(e){}
+  if(A.stream)A.stream.getTracks().forEach(t=&gt;t.stop());
+  try{A.proc&amp;&amp;A.proc.disconnect()}catch(e){}
+  try{A.ctx&amp;&amp;A.ctx.close()}catch(e){}A.live=false;A.proc=null;
+  if(SOS)BUS.send({t:&#x27;audio-state&#x27;,id:SOS.id,on:false});
+  A.stream=A.rec=A.ctx=A.an=null;
+}
+
+/* ===================== SOS: состояния ===================== */
+const STEPS=[&#x27;Сигнал отправляется&#x27;,&#x27;Сигнал получен диспетчером&#x27;,&#x27;Ожидание диспетчера&#x27;,&#x27;Диспетчер принял вызов&#x27;,&#x27;Экипаж в пути&#x27;,&#x27;Экипаж на месте&#x27;];
+function renderSteps(idx){$(&#x27;#statusList&#x27;).innerHTML=STEPS.map((s,i)=&gt;`&lt;div class=&quot;st ${i&lt;idx?&#x27;done&#x27;:&#x27;&#x27;} ${i===idx?&#x27;cur&#x27;:&#x27;&#x27;}&quot;&gt;&lt;span class=&quot;dot&quot;&gt;${i&lt;idx?&#x27;✓&#x27;:i+1}&lt;/span&gt;${s}&lt;/div&gt;`).join(&#x27;&#x27;)}
+const TXT=[[&#x27;Мы отправляем ваш сигнал…&#x27;,&#x27;Подождите&#x27;],[&#x27;Сигнал получен&#x27;,&#x27;Диспетчер видит вашу позицию&#x27;],[&#x27;Ожидание диспетчера&#x27;,&#x27;Скоро вам ответят&#x27;],[&#x27;Диспетчер принял вызов&#x27;,&#x27;Подбираем ближайший экипаж&#x27;],[&#x27;Экипаж в пути&#x27;,&#x27;Следите за машиной на карте&#x27;],[&#x27;Экипаж на месте&#x27;,&#x27;Вы в безопасности&#x27;],[&#x27;Экипаж на месте&#x27;,&#x27;Вы в безопасности&#x27;]];
+function setStep(i){
+  if(!SOS||i&lt;=SOS.step&amp;&amp;i!==0)return;SOS.step=i;renderSteps(Math.min(i,6));
+  $(&#x27;#sheetTitle&#x27;).innerHTML=&#x27;&lt;b&gt;&#x27;+TXT[i][0]+&#x27;&lt;/b&gt;&#x27;;$(&#x27;#sheetEta&#x27;).textContent=TXT[i][1];
+  if(i&gt;=3&amp;&amp;S.notif&amp;&amp;!S.silent&amp;&amp;P.notif===&#x27;granted&#x27;){try{new Notification(&#x27;Safety SOS&#x27;,{body:TXT[i][0]+&#x27; (демо)&#x27;})}catch(e){}}
+  vib(i&gt;=5?[80,40,80]:20);
+}
+function pushLoc(force){
+  if(!SOS)return;const now=Date.now();if(!force&amp;&amp;now-(pushLoc.t||0)&lt;900)return;pushLoc.t=now;
+  const pos=G.pos||SOS.pos;SOS.pos=pos;
+  BUS.send({t:&#x27;loc&#x27;,id:SOS.id,pos,acc:G.acc,approx:!!SOS.approx});
+  try{localStorage.setItem(&#x27;ssos_active&#x27;,JSON.stringify(alertPayload()))}catch(e){}
+}
+function alertPayload(){return{t:&#x27;alert&#x27;,id:SOS.id,name:S.name||&#x27;Пользователь&#x27;,phone:S.phone||&#x27;&#x27;,silent:S.silent,pos:SOS.pos,acc:G.acc,approx:!!SOS.approx,started:SOS.started}}
+function sendAlert(){BUS.send(alertPayload());try{localStorage.setItem(&#x27;ssos_active&#x27;,JSON.stringify(alertPayload()))}catch(e){}}
+
+function activate(how){
+  if(SOS)return;
+  SOS={id:&#x27;SOS-&#x27;+Date.now().toString(36).toUpperCase(),started:Date.now(),step:0,how,pos:G.pos||null,approx:false,team:null};
+  startAudio();                                  // 1. звук: сразу
+  if(!G.pos)requestGeo();                        // 2. позиция, если ещё нет
+  go(&#x27;active&#x27;);renderSteps(0);setStep(0);
+  $(&#x27;#chGpsV&#x27;).textContent=G.pos?&#x27;Местоположение получено&#x27;:&#x27;Определяем местоположение…&#x27;;
+  $(&#x27;#chNet&#x27;).textContent=navigator.onLine?&#x27;На связи&#x27;:&#x27;Нет соединения&#x27;;
+  $(&#x27;#dock&#x27;).style.display=&#x27;none&#x27;;$(&#x27;#gpsBtn&#x27;).style.display=&#x27;none&#x27;;$(&#x27;#geoBanner&#x27;).style.display=&#x27;none&#x27;;
+  $(&#x27;#sheetNote&#x27;).textContent=&#x27;Если вы в безопасности, отмените вызов&#x27;;
+  restoreSosLayers();
+  sendAlert();
+  BUS.send({t:&#x27;hello-user&#x27;,id:SOS.id});
+  // если геопозиции нет 6 секунд — отправляем примерную точку и честно помечаем её
+  SOS.approxT=setTimeout(()=&gt;{if(SOS&amp;&amp;!G.pos){SOS.pos=TASH;SOS.approx=true;$(&#x27;#chGpsV&#x27;).textContent=&#x27;GPS недоступен, позиция примерная&#x27;;restoreSosLayers();sendAlert()}},6000);
+  // если диспетчерская не отвечает
+  SOS.hintT=setTimeout(()=&gt;{if(SOS&amp;&amp;SOS.step&lt;1){toast(&#x27;Диспетчерская не на связи. Откройте safety-sos-police.html в соседней вкладке&#x27;,6000);$(&#x27;#sheetEta&#x27;).textContent=&#x27;Диспетчерская не отвечает&#x27;}},8000);
+  SOS.ping=setInterval(()=&gt;{if(SOS)pushLoc(true)},4000);
+  getWake();
+}
+async function getWake(){try{if(navigator.wakeLock&amp;&amp;SOS&amp;&amp;!SOS.wl){SOS.wl=await navigator.wakeLock.request(&#x27;screen&#x27;)}}catch(e){}}
+document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;{if(document.visibilityState===&#x27;visible&#x27;&amp;&amp;SOS){SOS.wl=null;getWake()}});
+addEventListener(&#x27;beforeunload&#x27;,e=&gt;{if(SOS){e.preventDefault();e.returnValue=&#x27;&#x27;}});
+
+/* сообщения от полиции */
+function fmtT(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+&#x27;:&#x27;+String(s%60).padStart(2,&#x27;0&#x27;)}
+function onMsg(m){
+  if(m.t===&#x27;hello-police&#x27;){if(SOS){sendAlert();pushLoc(true)}return}
+  if(!SOS||m.id!==SOS.id)return;
+  switch(m.t){
+    case &#x27;ack&#x27;:setStep(2);clearTimeout(SOS.hintT);break;
+    case &#x27;accepted&#x27;:setStep(3);break;
+    case &#x27;assigned&#x27;:SOS.team=m.team;setStep(4);$(&#x27;#sheetNote&#x27;).textContent=m.team.name+&#x27; · &#x27;+m.team.car;toast(&#x27;Экипаж назначен: &#x27;+m.team.name,3500);break;
+    case &#x27;departed&#x27;:setStep(5);toast(&#x27;Экипаж выехал&#x27;,3000);break;
+    case &#x27;listen&#x27;:A.live=!!m.on;break;
+    case &#x27;route&#x27;:drawRoute(m);break;
+    case &#x27;car&#x27;:moveCar(m);break;
+    case &#x27;arrived&#x27;:setStep(6);$(&#x27;#sheetNote&#x27;).textContent=&#x27;Экипаж на месте. Оставайтесь на связи&#x27;;vib([100,50,100]);toast(&#x27;Экипаж на месте&#x27;,4000);if(carM&amp;&amp;map){map.fitBounds(L.latLngBounds([carM.getLatLng(),G.pos||SOS.pos]).pad(.5),{maxZoom:18})}break;
+    case &#x27;resolve&#x27;:finish(&#x27;resolved&#x27;);break;
+  }
+}
+function drawRoute(m){
+  if(!hasMap())return;initMap();
+  if(routeL)map.removeLayer(routeL);
+  routeL=L.polyline(m.coords,{color:&#x27;#1677FF&#x27;,weight:6,opacity:.85,lineCap:&#x27;round&#x27;}).addTo(map);
+  if(m.reroute){toast(&#x27;Маршрут обновлён: вы переместились&#x27;,2500);return}
+  following=false;fitCar=true;showMapSheet();
+  setTimeout(()=&gt;{map.invalidateSize();map.fitBounds(L.latLngBounds(m.coords).extend(SOS.pos||G.pos||TASH).pad(.25),{maxZoom:17})},120)
+}
+function moveCar(m){
+  if(!hasMap()||!map)return;
+  if(!carM)carM=L.marker(m.pos,{icon:ICON.car(),interactive:false,zIndexOffset:800}).addTo(map);else carM.setLatLng(m.pos);
+  const el=carM.getElement&amp;&amp;carM.getElement();if(el&amp;&amp;el.firstChild)el.firstChild.style.transform=&#x27;rotate(&#x27;+(m.heading||0)+&#x27;deg)&#x27;;
+  if(SOS.team)$(&#x27;#sheetNote&#x27;).textContent=SOS.team.name+&#x27; · &#x27;+(m.dist&gt;=1000?(m.dist/1000).toFixed(1)+&#x27; км&#x27;:Math.round(m.dist)+&#x27; м&#x27;)+&#x27; · прибытие через &#x27;+fmtT(m.eta);
+  $(&#x27;#sheetEta&#x27;).textContent=&#x27;Экипаж приближается&#x27;;
+  if(fitCar&amp;&amp;(Date.now()-(moveCar.t||0)&gt;2500)){moveCar.t=Date.now();map.fitBounds(L.latLngBounds([m.pos,G.pos||SOS.pos||TASH]).pad(.5),{maxZoom:18,animate:true})}
+}
+function showMapSheet(){go(&#x27;map-s&#x27;);$(&#x27;#dock&#x27;).style.display=&#x27;none&#x27;;$(&#x27;#gpsBtn&#x27;).style.display=&#x27;none&#x27;;$(&#x27;#mapsheet&#x27;).style.display=&#x27;block&#x27;}
+function showIdle(){
+  if(SOS)return;
+  $(&#x27;#dock&#x27;).style.display=&#x27;block&#x27;;$(&#x27;#gpsBtn&#x27;).style.display=&#x27;grid&#x27;;$(&#x27;#mapsheet&#x27;).style.display=&#x27;none&#x27;;
+  setTimeout(()=&gt;{maxX=slider.clientWidth-66;reset(false)},30)}
+
+function clearSosLayers(){if(!map)return;fitCar=true;[sosM,carM,routeL,trailL].forEach(l=&gt;l&amp;&amp;map.removeLayer(l));sosM=carM=routeL=trailL=null}
+function finish(kind,reason){
+  if(!SOS)return;
+  const id=SOS.id,dur=Math.round((Date.now()-SOS.started)/1000);
+  clearTimeout(SOS.hintT);clearTimeout(SOS.approxT);clearInterval(SOS.ping);try{SOS.wl&amp;&amp;SOS.wl.release()}catch(e){}
+  stopAudio();
+  if(kind===&#x27;cancel&#x27;)BUS.send({t:&#x27;cancel&#x27;,id,reason:reason||&#x27;cancel&#x27;});
+  S.hist.unshift({id,at:SOS.started,dur,status:kind===&#x27;cancel&#x27;?(reason===&#x27;safe&#x27;?&#x27;Завершён вами&#x27;:&#x27;Отменён&#x27;):&#x27;Завершён диспетчером&#x27;});S.hist=S.hist.slice(0,30);save();
+  try{localStorage.removeItem(&#x27;ssos_active&#x27;)}catch(e){}
+  SOS=null;vib([60,40,60]);clearSosLayers();
+  $(&#x27;#doneT&#x27;).textContent=kind===&#x27;cancel&#x27;?(reason===&#x27;safe&#x27;?&#x27;SOS завершён&#x27;:&#x27;Вызов отменён&#x27;):&#x27;Ситуация завершена&#x27;;
+  $(&#x27;#doneS&#x27;).textContent=kind===&#x27;cancel&#x27;?&#x27;Передача геопозиции и запись остановлены.&#x27;:&#x27;Диспетчер закрыл вызов. Это демонстрация, реальная помощь не вызывалась.&#x27;;
+  go(&#x27;done&#x27;);setTimeout(()=&gt;reset(false),50);
+}
+$(&#x27;#showMap&#x27;).onclick=()=&gt;{showMapSheet();if(map&amp;&amp;SOS){const b=L.latLngBounds([SOS.pos||G.pos||TASH]);if(carM)b.extend(carM.getLatLng());map.invalidateSize();map.fitBounds(b.pad(1.2),{maxZoom:17})}};
+$(&#x27;#toRed&#x27;).onclick=()=&gt;go(&#x27;active&#x27;);
+$(&#x27;#cancelBtn&#x27;).onclick=()=&gt;{if(confirm(&#x27;Отменить вызов? Передача геопозиции и запись остановятся.&#x27;))finish(&#x27;cancel&#x27;,&#x27;cancel&#x27;)};
+const call=()=&gt;{location.href=&#x27;tel:112&#x27;};$(&#x27;#call112&#x27;).onclick=call;$(&#x27;#call112b&#x27;).onclick=call;
+let hold=null,hs=0;const hb=$(&#x27;#holdEnd&#x27;),hf=hb.querySelector(&#x27;.hf&#x27;);
+const hend=ok=&gt;{cancelAnimationFrame(hold);if(!ok)hf.style.width=&#x27;0&#x27;};
+hb.addEventListener(&#x27;pointerdown&#x27;,e=&gt;{e.preventDefault();hs=performance.now();const loop=()=&gt;{const p=Math.min(1,(performance.now()-hs)/1500);hf.style.width=p*100+&#x27;%&#x27;;if(p&gt;=1){hend(true);finish(&#x27;cancel&#x27;,&#x27;safe&#x27;)}else hold=requestAnimationFrame(loop)};loop()});
+[&#x27;pointerup&#x27;,&#x27;pointerleave&#x27;,&#x27;pointercancel&#x27;].forEach(ev=&gt;hb.addEventListener(ev,()=&gt;hend(false)));
+
+/* ===================== Вход ===================== */
+const tel=$(&#x27;#tel&#x27;);const digits=v=&gt;v.replace(/\D/g,&#x27;&#x27;).slice(0,9);
+tel.addEventListener(&#x27;input&#x27;,()=&gt;{const d=digits(tel.value);let o=&#x27;&#x27;;if(d.length)o+=d.slice(0,2);if(d.length&gt;2)o+=&#x27; &#x27;+d.slice(2,5);if(d.length&gt;5)o+=&#x27; &#x27;+d.slice(5,7);if(d.length&gt;7)o+=&#x27; &#x27;+d.slice(7,9);tel.value=o;$(&#x27;#telBtn&#x27;).disabled=d.length!==9;$(&#x27;#telErr&#x27;).textContent=&#x27;&#x27;});
+$(&#x27;#telBtn&#x27;).onclick=()=&gt;{const d=digits(tel.value);if(d.length!==9){$(&#x27;#telErr&#x27;).textContent=&#x27;Введите номер полностью: 9 цифр&#x27;;return}S.phone=&#x27;+998 &#x27;+tel.value;$(&#x27;#otpSub&#x27;).textContent=&#x27;Мы отправили код на &#x27;+S.phone;go(&#x27;otp-s&#x27;);$(&#x27;#otp input&#x27;).focus()};
+const otp=$(&#x27;#otp&#x27;);for(let i=0;i&lt;6;i++){const e=document.createElement(&#x27;input&#x27;);e.inputMode=&#x27;numeric&#x27;;e.maxLength=1;e.setAttribute(&#x27;aria-label&#x27;,&#x27;Цифра &#x27;+(i+1));otp.appendChild(e)}
+const oi=$$(&#x27;#otp input&#x27;);
+oi.forEach((e,i)=&gt;{e.addEventListener(&#x27;input&#x27;,()=&gt;{e.value=e.value.replace(/\D/g,&#x27;&#x27;);if(e.value&amp;&amp;oi[i+1])oi[i+1].focus();$(&#x27;#otpBtn&#x27;).disabled=oi.some(o=&gt;!o.value);$(&#x27;#otpErr&#x27;).textContent=&#x27;&#x27;});
+  e.addEventListener(&#x27;keydown&#x27;,ev=&gt;{if(ev.key===&#x27;Backspace&#x27;&amp;&amp;!e.value&amp;&amp;oi[i-1])oi[i-1].focus()});
+  e.addEventListener(&#x27;paste&#x27;,ev=&gt;{const t=(ev.clipboardData.getData(&#x27;text&#x27;)||&#x27;&#x27;).replace(/\D/g,&#x27;&#x27;).slice(0,6);if(!t)return;ev.preventDefault();[...t].forEach((c,k)=&gt;oi[k].value=c);$(&#x27;#otpBtn&#x27;).disabled=t.length&lt;6})});
+$(&#x27;#otpBtn&#x27;).onclick=()=&gt;{const c=oi.map(o=&gt;o.value).join(&#x27;&#x27;);if(c===&#x27;123456&#x27;){go(&#x27;name-s&#x27;)}else{$(&#x27;#otpErr&#x27;).textContent=&#x27;Неверный код. Попробуйте ещё раз&#x27;;vib([60,40,60]);oi.forEach(o=&gt;o.value=&#x27;&#x27;);oi[0].focus();$(&#x27;#otpBtn&#x27;).disabled=true}};
+$(&#x27;#nameBtn&#x27;).onclick=()=&gt;{const n=$(&#x27;#fn&#x27;).value.trim();if(!n){$(&#x27;#fnErr&#x27;).textContent=&#x27;Введите имя&#x27;;return}S.name=(n+&#x27; &#x27;+$(&#x27;#ln&#x27;).value.trim()).trim();save();go(&#x27;perm-s&#x27;);refreshPerms()};
+
+/* ===================== Профиль ===================== */
+function sw(id,key,cb){const e=$(id);e.classList.toggle(&#x27;on&#x27;,!!S[key]);e.parentElement.onclick=()=&gt;{S[key]=!S[key];e.classList.toggle(&#x27;on&#x27;,S[key]);save();cb&amp;&amp;cb()}}
+sw(&#x27;#swSilent&#x27;,&#x27;silent&#x27;,()=&gt;{applyTheme();toast(S.silent?&#x27;Тихий SOS включён: без звуков и вибрации&#x27;:&#x27;Тихий SOS выключен&#x27;)});
+sw(&#x27;#swNotif&#x27;,&#x27;notif&#x27;,()=&gt;{if(S.notif&amp;&amp;P.notif===&#x27;prompt&#x27;)requestNotif()});sw(&#x27;#swAudio&#x27;,&#x27;audio&#x27;);sw(&#x27;#swDark&#x27;,&#x27;dark&#x27;,applyTheme);
+function refreshProfile(){$(&#x27;#pName&#x27;).textContent=S.name||&#x27;Пользователь&#x27;;$(&#x27;#pPhone&#x27;).textContent=S.phone||&#x27;+998&#x27;;$(&#x27;#av&#x27;).textContent=(S.name||&#x27;U&#x27;)[0].toUpperCase();
+  [[&#x27;#swSilent&#x27;,&#x27;silent&#x27;],[&#x27;#swNotif&#x27;,&#x27;notif&#x27;],[&#x27;#swAudio&#x27;,&#x27;audio&#x27;],[&#x27;#swDark&#x27;,&#x27;dark&#x27;]].forEach(([a,k])=&gt;$(a).classList.toggle(&#x27;on&#x27;,!!S[k]));permSummary()}
+$(&#x27;#rowPerm&#x27;).onclick=()=&gt;go(&#x27;perm-set&#x27;);
+$(&#x27;#rowHist&#x27;).onclick=()=&gt;{renderHist();go(&#x27;hist-s&#x27;)};
+function renderHist(){const l=$(&#x27;#histList&#x27;);l.innerHTML=S.hist.length?S.hist.map(h=&gt;{const d=new Date(h.at);return `&lt;div class=&quot;hist glass&quot;&gt;&lt;div&gt;&lt;b&gt;${d.toLocaleDateString(&#x27;ru-RU&#x27;)} · ${d.toLocaleTimeString(&#x27;ru-RU&#x27;,{hour:&#x27;2-digit&#x27;,minute:&#x27;2-digit&#x27;})}&lt;/b&gt;&lt;div style=&quot;font-size:13px;color:var(--muted);margin-top:2px&quot;&gt;${h.status} · ${h.dur} сек&lt;/div&gt;&lt;/div&gt;&lt;span class=&quot;pill&quot;&gt;ДЕМО&lt;/span&gt;&lt;/div&gt;`}).join(&#x27;&#x27;):&#x27;&lt;p style=&quot;text-align:center;color:var(--muted);margin-top:60px&quot;&gt;Пока нет событий SOS&lt;/p&gt;&#x27;}
+$(&#x27;#rowLang&#x27;).onclick=()=&gt;{const L2=[&#x27;Русский&#x27;,&#x27;Oʻzbekcha&#x27;,&#x27;English&#x27;];const i=(L2.indexOf($(&#x27;#langV&#x27;).textContent)+1)%3;$(&#x27;#langV&#x27;).textContent=L2[i];toast(&#x27;Локализация подготовлена. Полные переводы будут в следующей версии&#x27;)};
+$(&#x27;#rowPriv&#x27;).onclick=()=&gt;toast(&#x27;Данные SOS видите только вы и назначенный диспетчер&#x27;);
+$(&#x27;#rowSup&#x27;).onclick=()=&gt;toast(&#x27;Поддержка: support@safetysos.example&#x27;);
+$(&#x27;#rowOut&#x27;).onclick=()=&gt;{S.auth=false;S.name=&#x27;&#x27;;S.phone=&#x27;&#x27;;save();oi.forEach(o=&gt;o.value=&#x27;&#x27;);tel.value=&#x27;&#x27;;go(&#x27;welcome&#x27;)};
+$(&#x27;#rowDel&#x27;).onclick=()=&gt;{if(confirm(&#x27;Удалить аккаунт и все данные? Это действие необратимо.&#x27;)){S.hist=[];S.auth=false;S.name=&#x27;&#x27;;S.phone=&#x27;&#x27;;save();go(&#x27;welcome&#x27;)}};
+$(&#x27;#menuBtn&#x27;).onclick=()=&gt;{refreshProfile();go(&#x27;profile-s&#x27;)};
+$(&#x27;#bellBtn&#x27;).onclick=()=&gt;toast(S.notif?&#x27;Новых уведомлений нет&#x27;:&#x27;Уведомления выключены в профиле&#x27;);
+window.addEventListener(&#x27;offline&#x27;,()=&gt;{$(&#x27;#chNet&#x27;).textContent=&#x27;Нет соединения&#x27;});window.addEventListener(&#x27;online&#x27;,()=&gt;{$(&#x27;#chNet&#x27;).textContent=&#x27;На связи&#x27;});
+
+/* ===================== Старт ===================== */
+BUS.init(onMsg);
+applyTheme();setFollowUi();
+$(&#x27;#demoBadge&#x27;).style.display=&#x27;none&#x27;;
+refreshPerms().then(()=&gt;{if(P.geo===&#x27;granted&#x27;)startGeo()});
+requestAnimationFrame(()=&gt;setTimeout(()=&gt;go(S.auth?&#x27;map-s&#x27;:&#x27;welcome&#x27;),900));
+if(S.auth)setTimeout(showIdle,1000);
+// отладочный доступ для автотестов
+window.__ssos={S,P,G,get SOS(){return SOS},get map(){return map}};
+})();
+
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" loading="eager"></iframe>
+<iframe title="Диспетчер" id="frame-dispatch" class="view " srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ru&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;Safety SOS Dispatch&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css&quot;&gt;
+&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js&quot;&gt;&lt;/script&gt;
+&lt;style&gt;
+:root{--bg:#0A1220;--panel:#0F1A2E;--panel2:#142340;--line:rgba(255,255,255,.08);--text:#EAF1FB;--muted:#8DA0BC;--blue:#1677FF;--green:#10B981;--red:#F04452;--amber:#F59E0B;--map:#141C2B}
+:root[data-theme=light]{--bg:#EEF2F8;--panel:#FFFFFF;--panel2:#F3F6FB;--line:rgba(10,30,60,.1);--text:#0B1B2E;--muted:#60708A;--map:#EEF1F5}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,&quot;SF Pro Text&quot;,Inter,&quot;Segoe UI&quot;,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;overflow:hidden;font-size:14px}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+header{height:58px;flex:none;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.2px}
+.brand .lg{width:32px;height:32px;border-radius:10px;background:linear-gradient(145deg,#34d399,#0a8f66);display:grid;place-items:center}
+.demo{font-size:11px;font-weight:700;background:rgba(245,158,11,.18);color:var(--amber);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.sp{flex:1}
+.kpi{display:flex;gap:6px;align-items:center;padding:6px 12px;border-radius:12px;background:var(--panel2);font-size:12px;color:var(--muted);white-space:nowrap}
+.kpi b{font-size:15px;color:var(--text)}
+.kpi.alert b{color:var(--red)}
+.ib{height:34px;padding:0 12px;border-radius:10px;background:var(--panel2);color:var(--text);font-size:13px;white-space:nowrap}
+.ib:hover{filter:brightness(1.15)}
+.ib.on{background:rgba(16,185,129,.2);color:var(--green)}
+#clock{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;min-width:62px;text-align:right}
+main{flex:1;display:grid;grid-template-columns:330px 1fr 390px;min-height:0}
+aside{background:var(--panel);display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+aside.right{border-right:0;border-left:1px solid var(--line)}
+.ph{padding:14px 16px 10px;font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.tabs{display:flex;gap:4px;padding:0 12px 10px}
+.tabs button{flex:1;height:32px;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tabs button.on{background:var(--panel2);color:var(--text)}
+.scroll{overflow:auto;flex:1;padding:0 12px 12px;display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;transition:.15s;position:relative}
+.card:hover{border-color:rgba(255,255,255,.2)}
+.card.sel{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset}
+.card.new{animation:flash 1s infinite}
+@keyframes flash{50%{background:rgba(240,68,82,.22)}}
+.row{display:flex;align-items:center;gap:8px}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.p-new{background:rgba(240,68,82,.2);color:#ff6b78}.p-accepted{background:rgba(245,158,11,.2);color:var(--amber)}
+.p-enroute{background:rgba(22,119,255,.22);color:#59a2ff}.p-arrived{background:rgba(16,185,129,.2);color:var(--green)}
+.p-resolved,.p-cancelled{background:rgba(141,160,188,.2);color:var(--muted)}
+.muted{color:var(--muted)}.sm{font-size:12px}
+.empty{margin:auto;text-align:center;color:var(--muted);padding:30px 22px;line-height:1.55}
+.empty .big{font-size:38px;margin-bottom:8px}
+#mapbox{position:relative;min-width:0}
+#map{position:absolute;inset:0;z-index:0;background:var(--map)}
+#mapbox{isolation:isolate}
+.leaflet-container{font:inherit;background:var(--map)!important}
+.leaflet-control-attribution{font-size:10px!important}
+.legend{position:absolute;left:14px;bottom:24px;z-index:500;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:12px;color:var(--muted);display:flex;gap:14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:600;background:var(--red);color:#fff;font-weight:700;padding:10px 18px;border-radius:12px;display:none;box-shadow:0 8px 30px rgba(240,68,82,.5);cursor:pointer}
+.banner.on{display:block;animation:flash2 .8s infinite}
+@keyframes flash2{50%{filter:brightness(1.25)}}
+.nomap{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);line-height:1.6;padding:30px}
+/* detail */
+.sec{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 12px 10px}
+.sec h4{margin:0 0 10px;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.kv{display:grid;grid-template-columns:104px 1fr;gap:6px 10px;font-size:13px}.kv span:nth-child(odd){color:var(--muted)}
+.btn{height:42px;border-radius:12px;font-weight:600;width:100%;background:var(--blue);color:#fff}
+.btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn.red{background:var(--red)}.btn.green{background:var(--green)}.btn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.unit{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);margin-bottom:6px;cursor:pointer;background:var(--panel)}
+.unit.sel{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset}.unit.busy{opacity:.45;cursor:not-allowed}
+.unit .dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex:none}
+.unit .dot.b{background:var(--amber)}
+.meter{display:flex;gap:3px;align-items:flex-end;height:30px}.meter i{flex:1;background:rgba(141,160,188,.25);border-radius:2px;height:4px;transition:height .15s,background .15s}
+.meter i.on{background:var(--green)}
+.rec{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;animation:blink 1s infinite}.rec.off{background:var(--muted);animation:none}
+@keyframes blink{50%{opacity:.2}}
+audio{width:100%;height:36px;margin-top:8px}
+.tl{max-height:150px;overflow:auto;font-size:12px;display:flex;flex-direction:column;gap:5px}
+.tl div{display:flex;gap:8px}.tl time{color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font:inherit}
+/* markers */
+.m-alert{position:relative;width:44px;height:56px;display:flex;flex-direction:column;align-items:center}
+.m-alert b{background:#F04452;color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;white-space:nowrap;box-shadow:0 3px 10px rgba(240,68,82,.6)}
+.m-alert i{margin-top:8px;width:20px;height:20px;border-radius:50%;background:#F04452;border:3.5px solid #fff;animation:ring 1.5s infinite}
+.m-alert.done i{background:#8DA0BC;animation:none}.m-alert.done b{background:#8DA0BC;box-shadow:none}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(240,68,82,.7)}100%{box-shadow:0 0 0 26px rgba(240,68,82,0)}}
+.m-unit{width:34px;height:34px;transition:transform .25s linear;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+.m-lab{position:absolute;left:36px;top:6px;background:var(--panel);color:var(--text);font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;white-space:nowrap;border:1px solid var(--line)}
+@media (max-width:1100px){main{grid-template-columns:280px 1fr 340px}}
+@media (max-width:860px){main{grid-template-columns:1fr;grid-template-rows:260px 1fr 1fr;overflow:auto}header .kpi{display:none}}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header&gt;
+  &lt;div class=&quot;brand&quot;&gt;&lt;div class=&quot;lg&quot;&gt;&lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 64 64&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;6&quot; stroke-linejoin=&quot;round&quot;&gt;&lt;path d=&quot;M32 6 10 14v16c0 14 9 22 22 28 13-6 22-14 22-28V14z&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;Safety SOS Dispatch&lt;/div&gt;
+  &lt;span class=&quot;demo&quot;&gt;ДЕМО · реальная полиция не вызывается&lt;/span&gt;
+  &lt;div class=&quot;sp&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi alert&quot;&gt;Активные &lt;b id=&quot;kAct&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+  &lt;div class=&quot;kpi&quot;&gt;Свободно экипажей &lt;b id=&quot;kFree&quot;&gt;3&lt;/b&gt;&lt;/div&gt;
+  &lt;button class=&quot;ib&quot; id=&quot;btnSound&quot;&gt;🔕 Звук выключен&lt;/button&gt;
+  &lt;button class=&quot;ib&quot; id=&quot;btnTheme&quot;&gt;🌙 Тема&lt;/button&gt;
+  &lt;div id=&quot;clock&quot;&gt;--:--:--&lt;/div&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;aside&gt;
+    &lt;div class=&quot;ph&quot;&gt;Тревоги&lt;/div&gt;
+    &lt;div class=&quot;tabs&quot;&gt;&lt;button class=&quot;on&quot; data-tab=&quot;act&quot;&gt;Активные&lt;/button&gt;&lt;button data-tab=&quot;hist&quot;&gt;История&lt;/button&gt;&lt;/div&gt;
+    &lt;div class=&quot;scroll&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+  &lt;/aside&gt;
+  &lt;div id=&quot;mapbox&quot;&gt;
+    &lt;div id=&quot;map&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;banner&quot; id=&quot;banner&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;legend&quot;&gt;&lt;span&gt;&lt;i style=&quot;background:#F04452&quot;&gt;&lt;/i&gt;SOS&lt;/span&gt;&lt;span&gt;&lt;i style=&quot;background:#10B981&quot;&gt;&lt;/i&gt;Свободный экипаж&lt;/span&gt;&lt;span&gt;&lt;i style=&quot;background:#1677FF&quot;&gt;&lt;/i&gt;В пути&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;aside class=&quot;right&quot;&gt;
+    &lt;div class=&quot;ph&quot;&gt;Карточка тревоги&lt;/div&gt;
+    &lt;div class=&quot;scroll&quot; id=&quot;detail&quot; style=&quot;padding:0&quot;&gt;&lt;/div&gt;
+  &lt;/aside&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+(()=&gt;{
+&#x27;use strict&#x27;;
+const $=s=&gt;document.querySelector(s),$$=s=&gt;[...document.querySelectorAll(s)];
+const hasMap=()=&gt;typeof window.L!==&#x27;undefined&#x27;;
+const TASH=[41.3111,69.2797];
+const esc=s=&gt;String(s??&#x27;&#x27;).replace(/[&amp;&lt;&gt;&quot;]/g,c=&gt;({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;}[c]));
+
+/* ---------- BUS ---------- */
+const seen=new Set();
+const BUS={ch:null,fn:null,
+  init(fn){this.fn=fn;try{this.ch=new BroadcastChannel(&#x27;safety-sos-v1&#x27;);this.ch.onmessage=e=&gt;this.recv(e.data)}catch(e){}
+    addEventListener(&#x27;storage&#x27;,e=&gt;{if(e.key===&#x27;ssos_msg&#x27;&amp;&amp;e.newValue){try{this.recv(JSON.parse(e.newValue))}catch(x){}}})},
+  recv(m){if(!m||!m.n||seen.has(m.n))return;seen.add(m.n);if(seen.size&gt;800)seen.delete(seen.values().next().value);this.fn&amp;&amp;this.fn(m)},
+  send(m){m.n=Math.random().toString(36).slice(2)+Date.now().toString(36);m.ts=Date.now();seen.add(m.n);
+    try{this.ch&amp;&amp;this.ch.postMessage(m)}catch(e){}try{localStorage.setItem(&#x27;ssos_msg&#x27;,JSON.stringify(m))}catch(e){}}
+};
+
+/* ---------- геометрия ---------- */
+const R=6371000,rad=d=&gt;d*Math.PI/180,deg=r=&gt;r*180/Math.PI;
+function dist(a,b){const dLa=rad(b[0]-a[0]),dLo=rad(b[1]-a[1]);const h=Math.sin(dLa/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function bearing(a,b){const y=Math.sin(rad(b[1]-a[1]))*Math.cos(rad(b[0]));const x=Math.cos(rad(a[0]))*Math.sin(rad(b[0]))-Math.sin(rad(a[0]))*Math.cos(rad(b[0]))*Math.cos(rad(b[1]-a[1]));return (deg(Math.atan2(y,x))+360)%360}
+function dest(a,br,d){const δ=d/R,θ=rad(br),φ1=rad(a[0]),λ1=rad(a[1]);const φ2=Math.asin(Math.sin(φ1)*Math.cos(δ)+Math.cos(φ1)*Math.sin(δ)*Math.cos(θ));const λ2=λ1+Math.atan2(Math.sin(θ)*Math.sin(δ)*Math.cos(φ1),Math.cos(δ)-Math.sin(φ1)*Math.sin(φ2));return[deg(φ2),deg(λ2)]}
+async function getRoute(from,to){
+  try{const c=new AbortController(),t=setTimeout(()=&gt;c.abort(),7000);
+    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&amp;geometries=geojson`,{signal:c.signal});clearTimeout(t);
+    const j=await r.json();
+    if(j.code===&#x27;Ok&#x27;&amp;&amp;j.routes[0]){const rt=j.routes[0];const coords=rt.geometry.coordinates.map(c=&gt;[c[1],c[0]]);coords.push(to);return{coords,distance:rt.distance+dist(coords[coords.length-2],to),duration:rt.duration,src:&#x27;osrm&#x27;}}
+  }catch(e){}
+  const d=dist(from,to),n=Math.max(8,Math.round(d/40));const coords=[];for(let i=0;i&lt;=n;i++)coords.push([from[0]+(to[0]-from[0])*i/n,from[1]+(to[1]-from[1])*i/n]);
+  return{coords,distance:d,duration:d/11,src:&#x27;line&#x27;}
+}
+
+/* ---------- состояние ---------- */
+const UNITS=[{id:&#x27;U1&#x27;,name:&#x27;Патруль-1&#x27;,car:&#x27;Седан · ДЕМО-01&#x27;,br:30,d:900},{id:&#x27;U2&#x27;,name:&#x27;Патруль-2&#x27;,car:&#x27;Седан · ДЕМО-02&#x27;,br:155,d:1500},{id:&#x27;U3&#x27;,name:&#x27;Патруль-3&#x27;,car:&#x27;Внедорожник · ДЕМО-03&#x27;,br:265,d:2200}];
+const ST={alerts:{},order:[],sel:null,sim:3,sound:false,tab:&#x27;act&#x27;,hist:[]};
+try{ST.hist=JSON.parse(localStorage.getItem(&#x27;ssos_police_hist&#x27;)||&#x27;[]&#x27;)}catch(e){}
+const busy=new Set();
+const LABEL={new:&#x27;Новая&#x27;,accepted:&#x27;Принята&#x27;,assigned:&#x27;Назначен экипаж&#x27;,enroute:&#x27;Экипаж в пути&#x27;,arrived:&#x27;На месте&#x27;,resolved:&#x27;Закрыта&#x27;,cancelled:&#x27;Отменена&#x27;};
+const fmtClock=ts=&gt;new Date(ts).toLocaleTimeString(&#x27;ru-RU&#x27;);
+const fmtDur=s=&gt;{s=Math.max(0,Math.round(s));const m=Math.floor(s/60);return m+&#x27;:&#x27;+String(s%60).padStart(2,&#x27;0&#x27;)};
+const fmtM=m=&gt;m&gt;=1000?(m/1000).toFixed(1)+&#x27; км&#x27;:Math.round(m)+&#x27; м&#x27;;
+
+/* ---------- карта ---------- */
+let map=null;const LAY={alerts:{},units:{},routes:{},acc:{}};
+function isDark(){return document.documentElement.dataset.theme!==&#x27;light&#x27;}
+const TL=[];function setTiles(){if(!map)return;TL.forEach(l=&gt;map.removeLayer(l));TL.length=0;const E=&#x27;https://server.arcgisonline.com/ArcGIS/rest/services/&#x27;;const at=&#x27;Tiles © Esri&#x27;;if(isDark()){TL.push(L.tileLayer(E+&#x27;Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,maxNativeZoom:16,attribution:at}),L.tileLayer(E+&#x27;Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,maxNativeZoom:16}))}else TL.push(L.tileLayer(E+&#x27;World_Street_Map/MapServer/tile/{z}/{y}/{x}&#x27;,{maxZoom:19,attribution:at}));TL.forEach(l=&gt;l.addTo(map))}
+function initMap(){
+  if(!hasMap()){$(&#x27;#map&#x27;).innerHTML=&#x27;&lt;div class=&quot;nomap&quot;&gt;Карта не загрузилась.&lt;br&gt;Проверьте подключение к интернету и обновите страницу.&lt;/div&gt;&#x27;;return}
+  map=L.map(&#x27;map&#x27;,{zoomControl:true,zoomSnap:.5,attributionControl:true}).setView(TASH,12);map.attributionControl.setPrefix(false);setTiles();
+}
+const alertIcon=(a,done)=&gt;L.divIcon({className:&#x27;&#x27;,html:`&lt;div class=&quot;m-alert ${done?&#x27;done&#x27;:&#x27;&#x27;}&quot;&gt;&lt;b&gt;SOS · ${esc(a.name.split(&#x27; &#x27;)[0])}&lt;/b&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;`,iconSize:[44,56],iconAnchor:[22,50]});
+const carSvg=c=&gt;`&lt;svg viewBox=&quot;0 0 40 64&quot; width=&quot;30&quot; height=&quot;48&quot;&gt;&lt;rect x=&quot;6&quot; y=&quot;4&quot; width=&quot;28&quot; height=&quot;56&quot; rx=&quot;10&quot; fill=&quot;#f8fafc&quot; stroke=&quot;${c}&quot; stroke-width=&quot;3.5&quot;/&gt;&lt;rect x=&quot;10&quot; y=&quot;16&quot; width=&quot;20&quot; height=&quot;12&quot; rx=&quot;3&quot; fill=&quot;#1d3b63&quot;/&gt;&lt;rect x=&quot;10&quot; y=&quot;40&quot; width=&quot;20&quot; height=&quot;9&quot; rx=&quot;3&quot; fill=&quot;#1d3b63&quot;/&gt;&lt;rect x=&quot;11&quot; y=&quot;9&quot; width=&quot;8&quot; height=&quot;5&quot; rx=&quot;2&quot; fill=&quot;#F04452&quot;/&gt;&lt;rect x=&quot;21&quot; y=&quot;9&quot; width=&quot;8&quot; height=&quot;5&quot; rx=&quot;2&quot; fill=&quot;#1677FF&quot;/&gt;&lt;rect x=&quot;6&quot; y=&quot;30&quot; width=&quot;28&quot; height=&quot;6&quot; fill=&quot;${c}&quot; opacity=&quot;.9&quot;/&gt;&lt;/svg&gt;`;
+const unitIcon=(u,c)=&gt;L.divIcon({className:&#x27;&#x27;,html:`&lt;div style=&quot;position:relative&quot;&gt;&lt;div class=&quot;m-unit&quot; data-car&gt;${carSvg(c)}&lt;/div&gt;&lt;span class=&quot;m-lab&quot;&gt;${esc(u.name)}&lt;/span&gt;&lt;/div&gt;`,iconSize:[34,48],iconAnchor:[17,24]});
+
+function drawMap(){
+  if(!map)return;
+  // тревоги
+  for(const id of Object.keys(ST.alerts)){const a=ST.alerts[id];const done=a.state===&#x27;resolved&#x27;||a.state===&#x27;cancelled&#x27;;
+    if(!a.pos)continue;
+    if(!LAY.alerts[id]){LAY.alerts[id]=L.marker(a.pos,{icon:alertIcon(a,done),zIndexOffset:900}).addTo(map);LAY.alerts[id].on(&#x27;click&#x27;,()=&gt;select(id))}
+    else{LAY.alerts[id].setLatLng(a.pos);if(LAY.alerts[id]._done!==done)LAY.alerts[id].setIcon(alertIcon(a,done))}
+    LAY.alerts[id]._done=done;
+    if(!LAY.acc[id])LAY.acc[id]=L.circle(a.pos,{radius:a.acc||50,color:&#x27;#F04452&#x27;,weight:1,fillColor:&#x27;#F04452&#x27;,fillOpacity:.1,interactive:false}).addTo(map);
+    else{LAY.acc[id].setLatLng(a.pos);LAY.acc[id].setRadius(a.acc||50)}
+    if(done){map.removeLayer(LAY.acc[id]);delete LAY.acc[id]}
+  }
+  // экипажи выбранной тревоги
+  const a=ST.alerts[ST.sel];
+  for(const k of Object.keys(LAY.units))if(!a||!a.units||!a.units[k]){map.removeLayer(LAY.units[k]);delete LAY.units[k]}
+  if(a&amp;&amp;a.units){for(const u of UNITS){const s=a.units[u.id];if(!s)continue;
+    const c=s.mode===&#x27;enroute&#x27;||s.mode===&#x27;arrived&#x27;?&#x27;#1677FF&#x27;:&#x27;#10B981&#x27;;
+    if(!LAY.units[u.id]){LAY.units[u.id]=L.marker(s.pos,{icon:unitIcon(u,c),zIndexOffset:700,interactive:false}).addTo(map)}
+    else LAY.units[u.id].setLatLng(s.pos);
+    const el=LAY.units[u.id].getElement&amp;&amp;LAY.units[u.id].getElement();const car=el&amp;&amp;el.querySelector(&#x27;[data-car]&#x27;);if(car)car.style.transform=&#x27;rotate(&#x27;+(s.heading||0)+&#x27;deg)&#x27;;
+  }}
+  // маршрут выбранной
+  for(const k of Object.keys(LAY.routes))if(k!==ST.sel||!(a&amp;&amp;a.route)){map.removeLayer(LAY.routes[k]);delete LAY.routes[k]}
+  if(a&amp;&amp;a.route&amp;&amp;!LAY.routes[a.id])LAY.routes[a.id]=L.polyline(a.route.coords,{color:&#x27;#1677FF&#x27;,weight:6,opacity:.85}).addTo(map);
+}
+function fitAlert(a){if(!map||!a||!a.pos)return;const b=L.latLngBounds([a.pos]);if(a.units)Object.values(a.units).forEach(u=&gt;b.extend(u.pos));map.fitBounds(b.pad(.4),{maxZoom:16,animate:true})}
+
+/* ---------- звук ---------- */
+let AC=null;
+function siren(){
+  if(!ST.sound)return;
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
+    for(let i=0;i&lt;4;i++){const o=AC.createOscillator(),g=AC.createGain();o.type=&#x27;sine&#x27;;o.frequency.setValueAtTime(i%2?660:880,t+i*.28);g.gain.setValueAtTime(.0001,t+i*.28);g.gain.exponentialRampToValueAtTime(.25,t+i*.28+.03);g.gain.exponentialRampToValueAtTime(.0001,t+i*.28+.26);o.connect(g).connect(AC.destination);o.start(t+i*.28);o.stop(t+i*.28+.28)}}catch(e){}
+}
+$(&#x27;#btnSound&#x27;).onclick=()=&gt;{ST.sound=!ST.sound;$(&#x27;#btnSound&#x27;).textContent=ST.sound?&#x27;🔔 Звук включён&#x27;:&#x27;🔕 Звук выключен&#x27;;$(&#x27;#btnSound&#x27;).classList.toggle(&#x27;on&#x27;,ST.sound);if(ST.sound)siren()};
+$(&#x27;#btnTheme&#x27;).onclick=()=&gt;{const d=document.documentElement;d.dataset.theme=d.dataset.theme===&#x27;light&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;;try{localStorage.setItem(&#x27;ssos_police_theme&#x27;,d.dataset.theme)}catch(e){}setTiles()};
+try{const t=localStorage.getItem(&#x27;ssos_police_theme&#x27;);if(t)document.documentElement.dataset.theme=t}catch(e){}
+setInterval(()=&gt;$(&#x27;#clock&#x27;).textContent=new Date().toLocaleTimeString(&#x27;ru-RU&#x27;),1000);
+
+/* ---------- логика тревог ---------- */
+let flashT=null;const baseTitle=document.title;
+function flashTitle(on){clearInterval(flashT);if(!on){document.title=baseTitle;return}let k=0;flashT=setInterval(()=&gt;{document.title=(k++%2)?baseTitle:&#x27;🚨 НОВЫЙ SOS&#x27;},700)}
+addEventListener(&#x27;focus&#x27;,()=&gt;flashTitle(false));
+function ev(a,t){a.events.push({ts:Date.now(),t});}
+function ensureAlert(m){
+  let a=ST.alerts[m.id];
+  if(!a){a={id:m.id,name:m.name||&#x27;Пользователь&#x27;,phone:m.phone||&#x27;&#x27;,silent:!!m.silent,pos:m.pos||null,acc:m.acc,approx:!!m.approx,started:m.started||Date.now(),state:&#x27;new&#x27;,events:[],audio:{chunks:[],mime:&#x27;&#x27;,on:false,level:0,bytes:0},units:null,route:null,team:null,lastLoc:Date.now(),cand:{}};
+    ST.alerts[m.id]=a;ST.order.unshift(m.id);ev(a,&#x27;Получен сигнал SOS&#x27;+(a.silent?&#x27; (тихий режим)&#x27;:&#x27;&#x27;));
+    BUS.send({t:&#x27;ack&#x27;,id:a.id});ev(a,&#x27;Отправлено подтверждение получения&#x27;);
+    siren();if(!document.hasFocus())flashTitle(true);
+    showBanner(&#x27;🚨 Новый SOS: &#x27;+a.name,a.id);
+    if(!ST.sel||(ST.alerts[ST.sel]&amp;&amp;[&#x27;resolved&#x27;,&#x27;cancelled&#x27;].includes(ST.alerts[ST.sel].state)))select(a.id,true);
+    if(a.pos)prepareUnits(a);
+  }
+  return a;
+}
+function showBanner(t,id){const b=$(&#x27;#banner&#x27;);b.textContent=t;b.classList.add(&#x27;on&#x27;);b.onclick=()=&gt;{select(id,true);b.classList.remove(&#x27;on&#x27;)};clearTimeout(showBanner.t);showBanner.t=setTimeout(()=&gt;b.classList.remove(&#x27;on&#x27;),9000)}
+async function prepareUnits(a){
+  if(!a.pos)return;
+  const anchor=a.pos;a.anchor=anchor;
+  a.units=a.units||{};
+  for(const u of UNITS){a.units[u.id]=a.units[u.id]||{pos:dest(anchor,u.br,u.d),heading:(u.br+180)%360,mode:&#x27;free&#x27;,eta:null,distance:null}}
+  renderAll();
+  await Promise.all(UNITS.map(async u=&gt;{const s=a.units[u.id];if(s.mode!==&#x27;free&#x27;)return;const r=await getRoute(dest(anchor,u.br,u.d),anchor);if(!ST.alerts[a.id]||s.mode!==&#x27;free&#x27;)return;s.pos=r.coords[0];s.heading=bearing(r.coords[0],r.coords[Math.min(1,r.coords.length-1)]);s.cand=r;s.eta=r.duration;s.distance=r.distance;
+    if(r.src===&#x27;line&#x27;)a.routeNote=&#x27;Маршрут по дорогам недоступен (нет связи с сервисом), используется прямая линия.&#x27;}));
+  renderAll();if(ST.sel===a.id)fitAlert(a);
+}
+function onMsg(m){
+  if(m.t===&#x27;crew-command&#x27;){
+     const a=ST.alerts[m.id];if(!a||!a.team||a.team.id!==m.unitId)return;
+     if(m.action===&#x27;depart&#x27;&amp;&amp;a.state===&#x27;assigned&#x27;){a.state=&#x27;enroute&#x27;;ev(a,&#x27;Экипаж подтвердил выезд&#x27;);BUS.send({t:&#x27;departed&#x27;,id:a.id});const us=a.units[a.team.id];if(a.route)startSim(a,us);renderAll()}
+     if(m.action===&#x27;arrive&#x27;&amp;&amp;a.state===&#x27;enroute&#x27;)arrive(a,a.units[a.team.id]);
+     if(m.action===&#x27;complete&#x27;&amp;&amp;a.state===&#x27;arrived&#x27;)resolve(a);
+     return;
+   }
+   if(m.t===&#x27;hello-crew&#x27;){Object.values(ST.alerts).filter(a=&gt;a.team&amp;&amp; ![&#x27;resolved&#x27;,&#x27;cancelled&#x27;].includes(a.state)).forEach(a=&gt;BUS.send({t:&#x27;crew-task&#x27;,id:a.id,unitId:a.team.id,name:a.name,phone:a.phone,pos:a.pos,state:a.state,team:a.team,route:a.route}));return}
+   if(m.t===&#x27;hello-user&#x27;){return}
+  if(m.t===&#x27;alert&#x27;){const a=ensureAlert(m);
+    if(m.pos){const first=!a.pos;a.pos=m.pos;a.acc=m.acc;a.approx=!!m.approx;a.lastLoc=Date.now();if(first)prepareUnits(a)}
+    renderAll();return}
+  const a=ST.alerts[m.id];if(!a)return;
+  switch(m.t){
+    case &#x27;loc&#x27;:{const first=!a.pos;if(m.pos){a.pos=m.pos;a.acc=m.acc;a.approx=!!m.approx;a.lastLoc=Date.now();if(a.team)BUS.send({t:&#x27;loc&#x27;,id:a.id,pos:a.pos,acc:a.acc})}if(first&amp;&amp;a.pos)prepareUnits(a);maybeReroute(a);drawMap();updateDetail();break}
+    case &#x27;audio&#x27;:{a.audio.mime=m.mime||a.audio.mime;a.audio.chunks[m.seq]=m.buf;a.audio.bytes+=m.buf.byteLength;a.audio.on=true;a.audio.t=Date.now();if(!a.audio.started){a.audio.started=Date.now();ev(a,&#x27;Началась запись звука&#x27;);renderAll()}updateDetail();break}
+    case &#x27;audio-state&#x27;:{a.audio.on=!!m.on;if(m.on&amp;&amp;!a.audio.started){a.audio.started=Date.now();ev(a,&#x27;Началась запись звука&#x27;)}if(!m.on)ev(a,&#x27;Запись звука остановлена&#x27;);renderAll();break}
+    case &#x27;pcm&#x27;:{playPcm(a,m);break}
+    case &#x27;level&#x27;:{a.audio.level=m.v;if(ST.sel===a.id)setMeter(m.v);break}
+    case &#x27;cancel&#x27;:{finishAlert(a,&#x27;cancelled&#x27;,m.reason===&#x27;safe&#x27;?&#x27;Пользователь отметил, что в безопасности&#x27;:&#x27;Пользователь отменил вызов&#x27;);break}
+  }
+}
+function maybeReroute(a){
+  if(a.state!==&#x27;enroute&#x27;||!a.route||a.rerouting||!a.pos)return;
+  const end=a.route.coords[a.route.coords.length-1];
+  if(dist(end,a.pos)&lt;50||Date.now()-(a.lastReroute||0)&lt;6000)return;
+  a.lastReroute=Date.now();a.rerouting=true;const us=a.units[a.team.id];
+  getRoute(us.pos,a.pos).then(r=&gt;{a.rerouting=false;if(a.state!==&#x27;enroute&#x27;)return;stopSim(a);a.route=r;ev(a,&#x27;Пользователь переместился, маршрут обновлён&#x27;);
+    if(LAY.routes[a.id]&amp;&amp;map){map.removeLayer(LAY.routes[a.id]);delete LAY.routes[a.id]}
+    BUS.send({t:&#x27;route&#x27;,id:a.id,coords:r.coords,distance:r.distance,duration:r.duration,reroute:true});startSim(a,us);drawMap()})
+}
+function finishAlert(a,state,note){
+  stopSim(a);BUS.send({t:&#x27;crew-status&#x27;,id:a.id,state});a.state=state;a.ended=Date.now();ev(a,note||&#x27;Закрыта&#x27;);
+  Object.keys(a.units||{}).forEach(k=&gt;{});releaseUnit(a);
+  ST.hist.unshift({id:a.id,name:a.name,phone:a.phone,at:a.started,end:a.ended,state,pos:a.pos,team:a.team&amp;&amp;a.team.name});ST.hist=ST.hist.slice(0,50);
+  try{localStorage.setItem(&#x27;ssos_police_hist&#x27;,JSON.stringify(ST.hist))}catch(e){}
+  renderAll();
+}
+function releaseUnit(a){if(a.team)busy.delete(a.team.id)}
+/* действия */
+function accept(a){if(a.state!==&#x27;new&#x27;)return;a.state=&#x27;accepted&#x27;;ev(a,&#x27;Диспетчер принял вызов&#x27;);BUS.send({t:&#x27;accepted&#x27;,id:a.id});renderAll()}
+async function dispatchUnit(a,uid){
+  if(a.state!==&#x27;accepted&#x27;||!a.pos)return;const u=UNITS.find(x=&gt;x.id===uid);if(!u||busy.has(uid))return;
+  busy.add(uid);a.team={id:u.id,name:u.name,car:u.car};a.state=&#x27;assigned&#x27;;
+  const us=a.units[uid];us.mode=&#x27;assigned&#x27;;ev(a,&#x27;Назначен &#x27;+u.name+&#x27;, построение маршрута…&#x27;);renderAll();
+  BUS.send({t:&#x27;assigned&#x27;,id:a.id,team:{id:u.id,name:u.name,car:u.car+&#x27; (демо)&#x27;}});
+  const r=await getRoute(us.pos,a.pos);
+  if(a.state!==&#x27;assigned&#x27;)return;
+  a.route=r;ev(a,&#x27;Маршрут: &#x27;+fmtM(r.distance)+&#x27;, &#x27;+(r.src===&#x27;osrm&#x27;?&#x27;по дорогам&#x27;:&#x27;прямая линия&#x27;));
+  us.pos=r.coords[0];
+  BUS.send({t:&#x27;route&#x27;,id:a.id,coords:r.coords,distance:r.distance,duration:r.duration});
+  BUS.send({t:&#x27;crew-task&#x27;,id:a.id,unitId:u.id,name:a.name,phone:a.phone,pos:a.pos,state:a.state,team:a.team,route:r});renderAll();fitAlert(a);
+}
+function startSim(a,us){
+  const c=a.route.coords,cum=[0];for(let i=1;i&lt;c.length;i++)cum.push(cum[i-1]+dist(c[i-1],c[i]));
+  a.sim={cum,total:cum[cum.length-1]||1,d:0,last:performance.now(),n:0,base:a.route.distance/Math.max(10,a.route.duration)};
+  a.sim.timer=setInterval(()=&gt;tick(a,us),250);
+}
+function stopSim(a){if(a.sim&amp;&amp;a.sim.timer){clearInterval(a.sim.timer);a.sim.timer=null}}
+function pointAt(sim,c,d){let lo=0,hi=sim.cum.length-1;while(hi-lo&gt;1){const mid=(lo+hi)&gt;&gt;1;if(sim.cum[mid]&lt;=d)lo=mid;else hi=mid}const seg=(sim.cum[hi]-sim.cum[lo])||1;const f=Math.min(1,Math.max(0,(d-sim.cum[lo])/seg));
+  return{pos:[c[lo][0]+(c[hi][0]-c[lo][0])*f,c[lo][1]+(c[hi][1]-c[lo][1])*f],heading:bearing(c[lo],c[hi])}}
+function tick(a,us){
+  const s=a.sim;if(!s||a.state!==&#x27;enroute&#x27;)return;const now=performance.now();const dt=(now-s.last)/1000;s.last=now;
+  const speed=s.base*ST.sim;s.d=Math.min(s.total,s.d+speed*dt);
+  const p=pointAt(s,a.route.coords,s.d);us.pos=p.pos;us.heading=p.heading;
+  const rem=s.total-s.d,eta=rem/speed;us.eta=eta;us.distance=rem;
+  if(++s.n%2===0)BUS.send({t:&#x27;car&#x27;,id:a.id,pos:p.pos,heading:p.heading,eta,dist:rem,speed:speed*3.6/ST.sim});
+  drawMap();if(ST.sel===a.id)updateDetail();
+  if(s.d&gt;=s.total-.5){stopSim(a);arrive(a,us)}
+}
+function arrive(a,us){if(a.state===&#x27;arrived&#x27;)return;stopSim(a);a.state=&#x27;arrived&#x27;;us.mode=&#x27;arrived&#x27;;us.eta=0;us.distance=0;ev(a,&#x27;Экипаж прибыл на место&#x27;);BUS.send({t:&#x27;arrived&#x27;,id:a.id});BUS.send({t:&#x27;crew-status&#x27;,id:a.id,state:&#x27;arrived&#x27;});renderAll()}
+function resolve(a){BUS.send({t:&#x27;crew-status&#x27;,id:a.id,state:&#x27;resolved&#x27;});BUS.send({t:&#x27;resolve&#x27;,id:a.id});finishAlert(a,&#x27;resolved&#x27;,&#x27;Вызов закрыт диспетчером&#x27;)}
+
+/* ---------- UI ---------- */
+function select(id,fit){ST.sel=id;const a=ST.alerts[id];renderAll();if(fit&amp;&amp;a)fitAlert(a)}
+$$(&#x27;.tabs button&#x27;).forEach(b=&gt;b.onclick=()=&gt;{ST.tab=b.dataset.tab;$$(&#x27;.tabs button&#x27;).forEach(x=&gt;x.classList.toggle(&#x27;on&#x27;,x===b));renderList()});
+function renderList(){
+  const box=$(&#x27;#list&#x27;);
+  if(ST.tab===&#x27;hist&#x27;){box.innerHTML=ST.hist.length?ST.hist.map(h=&gt;`&lt;div class=&quot;card&quot; style=&quot;cursor:default&quot;&gt;&lt;div class=&quot;row&quot;&gt;&lt;b&gt;${esc(h.name)}&lt;/b&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;span class=&quot;pill p-${h.state}&quot;&gt;${LABEL[h.state]}&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;muted sm&quot; style=&quot;margin-top:6px&quot;&gt;${new Date(h.at).toLocaleString(&#x27;ru-RU&#x27;)} · ${fmtDur((h.end-h.at)/1000)}${h.team?&#x27; · &#x27;+esc(h.team):&#x27;&#x27;}&lt;/div&gt;&lt;/div&gt;`).join(&#x27;&#x27;):&#x27;&lt;div class=&quot;empty&quot;&gt;История пуста&lt;/div&gt;&#x27;;return}
+  const act=ST.order.map(id=&gt;ST.alerts[id]).filter(a=&gt;a&amp;&amp;![&#x27;resolved&#x27;,&#x27;cancelled&#x27;].includes(a.state));
+  box.innerHTML=act.length?act.map(a=&gt;`&lt;div class=&quot;card ${a.id===ST.sel?&#x27;sel&#x27;:&#x27;&#x27;} ${a.state===&#x27;new&#x27;?&#x27;new&#x27;:&#x27;&#x27;}&quot; data-id=&quot;${a.id}&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;&lt;b&gt;${esc(a.name)}&lt;/b&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;span class=&quot;pill p-${a.state}&quot;&gt;${LABEL[a.state]}&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;muted sm&quot; style=&quot;margin-top:6px&quot;&gt;${esc(a.phone)||&#x27;номер не указан&#x27;}&lt;/div&gt;
+    &lt;div class=&quot;row sm muted&quot; style=&quot;margin-top:6px&quot;&gt;&lt;span&gt;${fmtClock(a.started)}&lt;/span&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;${a.audio.on?&#x27;&lt;span&gt;&lt;span class=&quot;rec&quot;&gt;&lt;/span&gt;запись&lt;/span&gt;&#x27;:&#x27;&#x27;}${a.silent?&#x27;&lt;span&gt;🤫 тихий&lt;/span&gt;&#x27;:&#x27;&#x27;}&lt;/div&gt;&lt;/div&gt;`).join(&#x27;&#x27;)
+   :`&lt;div class=&quot;empty&quot;&gt;&lt;div class=&quot;big&quot;&gt;🛡️&lt;/div&gt;&lt;b style=&quot;color:var(--text)&quot;&gt;Ожидание тревог&lt;/b&gt;&lt;br&gt;Откройте &lt;b&gt;safety-sos-user.html&lt;/b&gt; в соседней вкладке этого же браузера, войдите (код 123456) и проведите ползунок SOS.&lt;/div&gt;`;
+  $$(&#x27;#list .card[data-id]&#x27;).forEach(c=&gt;c.onclick=()=&gt;select(c.dataset.id,true));
+  $(&#x27;#kAct&#x27;).textContent=act.length;$(&#x27;#kFree&#x27;).textContent=UNITS.length-busy.size;
+}
+/* детальная панель: каркас строится один раз */
+const D=$(&#x27;#detail&#x27;);
+function buildDetail(a){
+  D.innerHTML=`
+  &lt;div class=&quot;sec&quot; style=&quot;margin-top:0&quot;&gt;&lt;div class=&quot;row&quot;&gt;&lt;div style=&quot;font-size:18px;font-weight:700&quot; id=&quot;dName&quot;&gt;&lt;/div&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;span class=&quot;pill&quot; id=&quot;dPill&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;muted sm&quot; style=&quot;margin-top:4px&quot; id=&quot;dMeta&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot;&gt;&lt;h4&gt;Местоположение&lt;/h4&gt;&lt;div class=&quot;kv&quot;&gt;&lt;span&gt;Координаты&lt;/span&gt;&lt;span id=&quot;dCoord&quot;&gt;&lt;/span&gt;&lt;span&gt;Точность&lt;/span&gt;&lt;span id=&quot;dAcc&quot;&gt;&lt;/span&gt;&lt;span&gt;Обновлено&lt;/span&gt;&lt;span id=&quot;dUpd&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div id=&quot;dApprox&quot; style=&quot;display:none;margin-top:10px;font-size:12px;color:var(--amber)&quot;&gt;⚠ GPS на устройстве недоступен. Позиция приблизительная.&lt;/div&gt;
+    &lt;button class=&quot;btn ghost&quot; id=&quot;dCenter&quot; style=&quot;margin-top:10px;height:36px&quot;&gt;Показать на карте&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot;&gt;&lt;h4&gt;Звук с места&lt;/h4&gt;&lt;div class=&quot;row&quot; style=&quot;margin-bottom:8px&quot;&gt;&lt;span id=&quot;dRec&quot;&gt;&lt;/span&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;span class=&quot;muted sm&quot; id=&quot;dRecInfo&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;meter&quot; id=&quot;dMeter&quot;&gt;${&#x27;&lt;i&gt;&lt;/i&gt;&#x27;.repeat(16)}&lt;/div&gt;
+    &lt;button class=&quot;btn ghost&quot; id=&quot;dLive&quot; style=&quot;margin-top:10px;height:36px&quot;&gt;🔊 Слушать онлайн&lt;/button&gt;
+    &lt;button class=&quot;btn ghost&quot; id=&quot;dListen&quot; style=&quot;margin-top:8px;height:36px&quot;&gt;▶ Прослушать запись&lt;/button&gt;&lt;audio id=&quot;dAudio&quot; controls style=&quot;display:none&quot;&gt;&lt;/audio&gt;
+    &lt;a id=&quot;dDl&quot; class=&quot;muted sm&quot; style=&quot;display:none;margin-top:8px&quot; download&gt;Скачать запись&lt;/a&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot;&gt;&lt;h4&gt;Действия&lt;/h4&gt;&lt;div id=&quot;dActions&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;sec&quot;&gt;&lt;h4&gt;Журнал&lt;/h4&gt;&lt;div class=&quot;tl&quot; id=&quot;dTl&quot;&gt;&lt;/div&gt;&lt;/div&gt;`;
+  $(&#x27;#dCenter&#x27;).onclick=()=&gt;{const x=ST.alerts[D.dataset.id];fitAlert(x)};
+  $(&#x27;#dListen&#x27;).onclick=()=&gt;listen(ST.alerts[D.dataset.id]);
+  $(&#x27;#dLive&#x27;).onclick=()=&gt;toggleLive(ST.alerts[D.dataset.id]);
+  D.dataset.built=a.id;
+}
+function listen(a){
+  if(!a||!a.audio.chunks.length)return;const parts=a.audio.chunks.filter(Boolean);
+  const blob=new Blob(parts,{type:(a.audio.mime||&#x27;audio/webm&#x27;).split(&#x27;;&#x27;)[0]});const url=URL.createObjectURL(blob);
+  const au=$(&#x27;#dAudio&#x27;);au.style.display=&#x27;block&#x27;;au.src=url;au.play().catch(()=&gt;{});
+  const dl=$(&#x27;#dDl&#x27;);dl.style.display=&#x27;inline-block&#x27;;dl.href=url;dl.download=a.id+&#x27;.&#x27;+((a.audio.mime||&#x27;&#x27;).includes(&#x27;mp4&#x27;)?&#x27;m4a&#x27;:&#x27;webm&#x27;);
+}
+function toggleLive(a){
+  if(!a)return;a.audio.live=!a.audio.live;
+  if(a.audio.live){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}a.audio.next=0}
+  BUS.send({t:&#x27;listen&#x27;,id:a.id,on:a.audio.live});ev(a,a.audio.live?&#x27;Диспетчер слушает онлайн&#x27;:&#x27;Онлайн-прослушивание выключено&#x27;);updateDetail();
+}
+function playPcm(a,m){
+  if(!AC||!a.audio.live)return;const i16=new Int16Array(m.buf),f=new Float32Array(i16.length);for(let i=0;i&lt;i16.length;i++)f[i]=i16[i]/32768;
+  const buf=AC.createBuffer(1,f.length,m.rate);buf.copyToChannel(f,0);const src=AC.createBufferSource();src.buffer=buf;src.connect(AC.destination);
+  const t=Math.max(AC.currentTime+.2,a.audio.next||0);src.start(t);a.audio.next=t+buf.duration;a.audio.pcm=(a.audio.pcm||0)+1;
+}
+function setMeter(v){const bars=$$(&#x27;#dMeter i&#x27;);const n=Math.round(v*bars.length);bars.forEach((b,i)=&gt;{b.classList.toggle(&#x27;on&#x27;,i&lt;n);b.style.height=(4+(i+1)*1.6)+&#x27;px&#x27;})}
+function updateDetail(){
+  const a=ST.alerts[ST.sel];
+  if(!a){D.dataset.built=&#x27;&#x27;;D.dataset.id=&#x27;&#x27;;D.innerHTML=&#x27;&lt;div class=&quot;empty&quot;&gt;&lt;div class=&quot;big&quot;&gt;📡&lt;/div&gt;Выберите тревогу в списке или на карте&lt;/div&gt;&#x27;;return}
+  if(D.dataset.built!==a.id){buildDetail(a);D.scrollTop=0}D.dataset.id=a.id;
+  $(&#x27;#dName&#x27;).textContent=a.name;const p=$(&#x27;#dPill&#x27;);p.className=&#x27;pill p-&#x27;+a.state;p.textContent=LABEL[a.state];
+  $(&#x27;#dMeta&#x27;).textContent=`${a.phone||&#x27;номер не указан&#x27;} · ${a.id} · ${fmtClock(a.started)}`;
+  $(&#x27;#dCoord&#x27;).textContent=a.pos?a.pos[0].toFixed(5)+&#x27;, &#x27;+a.pos[1].toFixed(5):&#x27;определяется…&#x27;;
+  $(&#x27;#dAcc&#x27;).textContent=a.acc?&#x27;±&#x27;+Math.round(a.acc)+&#x27; м&#x27;:&#x27;—&#x27;;
+  {const age=a.lastLoc?Math.max(0,Math.round((Date.now()-a.lastLoc)/1000)):null;const live=![&#x27;resolved&#x27;,&#x27;cancelled&#x27;].includes(a.state);const u=$(&#x27;#dUpd&#x27;);u.textContent=age==null?&#x27;—&#x27;:age+&#x27; с назад&#x27;+(live&amp;&amp;age&gt;15?&#x27; · нет связи&#x27;:&#x27;&#x27;);u.style.color=live&amp;&amp;age&gt;15?&#x27;var(--red)&#x27;:&#x27;&#x27;}
+  $(&#x27;#dApprox&#x27;).style.display=a.approx?&#x27;block&#x27;:&#x27;none&#x27;;
+  const rec=$(&#x27;#dRec&#x27;);rec.innerHTML=a.audio.on?&#x27;&lt;span class=&quot;rec&quot;&gt;&lt;/span&gt;Запись идёт&#x27;:&#x27;&lt;span class=&quot;rec off&quot;&gt;&lt;/span&gt;&#x27;+(a.audio.chunks.length?&#x27;Запись остановлена&#x27;:&#x27;Звук не поступает&#x27;);
+  $(&#x27;#dRecInfo&#x27;).textContent=a.audio.chunks.length?a.audio.chunks.filter(Boolean).length+&#x27; сек · &#x27;+Math.round(a.audio.bytes/1024)+&#x27; КБ&#x27;:&#x27;&#x27;;
+  $(&#x27;#dListen&#x27;).disabled=!a.audio.chunks.length;{const lb=$(&#x27;#dLive&#x27;);lb.disabled=!a.audio.on;lb.textContent=a.audio.live?&#x27;🔇 Выключить онлайн-прослушивание&#x27;:&#x27;🔊 Слушать онлайн&#x27;;lb.style.background=a.audio.live?&#x27;rgba(16,185,129,.2)&#x27;:&#x27;&#x27;}if(!a.audio.on)setMeter(0);
+  // действия
+  const box=$(&#x27;#dActions&#x27;);const key=a.state+&#x27;|&#x27;+Object.keys(a.units||{}).map(k=&gt;a.units[k].mode+Math.round((a.units[k].eta||0)/5)).join()+&#x27;|&#x27;+[...busy].join()+&#x27;|&#x27;+(D.dataset.u||&#x27;&#x27;)+&#x27;|&#x27;+ST.sim;
+  if(box.dataset.key!==key){box.dataset.key=key;box.innerHTML=actionsHtml(a);wireActions(a)}
+  else if(a.state===&#x27;enroute&#x27;){const e=$(&#x27;#dEta&#x27;);if(e){const s=a.units[a.team.id];e.textContent=fmtDur(s.eta)+&#x27; · &#x27;+fmtM(s.distance||0)}}
+  $(&#x27;#dTl&#x27;).innerHTML=a.events.slice().reverse().map(e=&gt;`&lt;div&gt;&lt;time&gt;${fmtClock(e.ts)}&lt;/time&gt;&lt;span&gt;${esc(e.t)}&lt;/span&gt;&lt;/div&gt;`).join(&#x27;&#x27;);
+}
+function actionsHtml(a){
+  if(a.state===&#x27;new&#x27;)return`&lt;button class=&quot;btn&quot; id=&quot;aAccept&quot;&gt;Принять вызов&lt;/button&gt;`;
+  if(a.state===&#x27;accepted&#x27;){
+    const sel=D.dataset.u||&#x27;&#x27;;
+    return`&lt;div class=&quot;muted sm&quot; style=&quot;margin-bottom:8px&quot;&gt;Выберите экипаж. ETA рассчитан по дорогам до точки вызова.&lt;/div&gt;`+UNITS.map(u=&gt;{const s=a.units&amp;&amp;a.units[u.id];const b=busy.has(u.id);
+      return`&lt;div class=&quot;unit ${sel===u.id?&#x27;sel&#x27;:&#x27;&#x27;} ${b?&#x27;busy&#x27;:&#x27;&#x27;}&quot; data-u=&quot;${u.id}&quot;&gt;&lt;span class=&quot;dot ${b?&#x27;b&#x27;:&#x27;&#x27;}&quot;&gt;&lt;/span&gt;&lt;div style=&quot;flex:1&quot;&gt;&lt;b&gt;${u.name}&lt;/b&gt;&lt;div class=&quot;muted sm&quot;&gt;${u.car}&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:right&quot; class=&quot;sm&quot;&gt;${s&amp;&amp;s.eta!=null?&#x27;&lt;b&gt;&#x27;+fmtDur(s.eta/ST.sim)+&#x27;&lt;/b&gt;&lt;div class=&quot;muted&quot;&gt;&#x27;+fmtM(s.distance||0)+&#x27;&lt;/div&gt;&#x27;:&#x27;&lt;span class=&quot;muted&quot;&gt;считаем…&lt;/span&gt;&#x27;}&lt;/div&gt;&lt;/div&gt;`}).join(&#x27;&#x27;)
+      +`&lt;div class=&quot;row&quot; style=&quot;margin:10px 0&quot;&gt;&lt;span class=&quot;muted sm&quot;&gt;Скорость демо&lt;/span&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;select id=&quot;aSim&quot;&gt;${[1,3,5,10].map(x=&gt;`&lt;option value=&quot;${x}&quot; ${x===ST.sim?&#x27;selected&#x27;:&#x27;&#x27;}&gt;×${x}&lt;/option&gt;`).join(&#x27;&#x27;)}&lt;/select&gt;&lt;/div&gt;
+      &lt;button class=&quot;btn&quot; id=&quot;aDispatch&quot; ${sel&amp;&amp;!busy.has(sel)&amp;&amp;a.pos?&#x27;&#x27;:&#x27;disabled&#x27;}&gt;Выслать экипаж&lt;/button&gt;${a.routeNote?`&lt;div class=&quot;muted sm&quot; style=&quot;margin-top:8px&quot;&gt;${esc(a.routeNote)}&lt;/div&gt;`:&#x27;&#x27;}`}
+  if(a.state===&#x27;enroute&#x27;){const s=a.units[a.team.id];return`&lt;div class=&quot;row&quot;&gt;&lt;b&gt;${esc(a.team.name)}&lt;/b&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;span class=&quot;muted sm&quot;&gt;${esc(a.team.car)}&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot; style=&quot;margin:10px 0&quot;&gt;&lt;span class=&quot;muted sm&quot;&gt;До места&lt;/span&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;b id=&quot;dEta&quot;&gt;${fmtDur(s.eta||0)} · ${fmtM(s.distance||0)}&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;row&quot; style=&quot;margin-bottom:10px&quot;&gt;&lt;span class=&quot;muted sm&quot;&gt;Скорость демо&lt;/span&gt;&lt;span class=&quot;sp&quot;&gt;&lt;/span&gt;&lt;select id=&quot;aSim&quot;&gt;${[1,3,5,10].map(x=&gt;`&lt;option value=&quot;${x}&quot; ${x===ST.sim?&#x27;selected&#x27;:&#x27;&#x27;}&gt;×${x}&lt;/option&gt;`).join(&#x27;&#x27;)}&lt;/select&gt;&lt;/div&gt;
+    &lt;button class=&quot;btn ghost&quot; id=&quot;aArrive&quot;&gt;Отметить прибытие вручную&lt;/button&gt;`}
+  if(a.state===&#x27;arrived&#x27;)return`&lt;div style=&quot;margin-bottom:10px;color:var(--green);font-weight:600&quot;&gt;✓ Экипаж на месте&lt;/div&gt;&lt;button class=&quot;btn green&quot; id=&quot;aResolve&quot;&gt;Закрыть вызов&lt;/button&gt;`;
+  return`&lt;div class=&quot;muted&quot;&gt;Вызов закрыт.&lt;/div&gt;`;
+}
+function wireActions(a){
+  const g=id=&gt;document.getElementById(id);
+  g(&#x27;aAccept&#x27;)&amp;&amp;(g(&#x27;aAccept&#x27;).onclick=()=&gt;accept(a));
+  $$(&#x27;#dActions .unit&#x27;).forEach(u=&gt;u.onclick=()=&gt;{if(u.classList.contains(&#x27;busy&#x27;))return;D.dataset.u=u.dataset.u;updateDetail()});
+  g(&#x27;aDispatch&#x27;)&amp;&amp;(g(&#x27;aDispatch&#x27;).onclick=()=&gt;{const u=D.dataset.u;D.dataset.u=&#x27;&#x27;;dispatchUnit(a,u)});
+  g(&#x27;aSim&#x27;)&amp;&amp;(g(&#x27;aSim&#x27;).onchange=e=&gt;{ST.sim=+e.target.value;updateDetail()});
+  g(&#x27;aArrive&#x27;)&amp;&amp;(g(&#x27;aArrive&#x27;).onclick=()=&gt;arrive(a,a.units[a.team.id]));
+  g(&#x27;aResolve&#x27;)&amp;&amp;(g(&#x27;aResolve&#x27;).onclick=()=&gt;resolve(a));
+}
+function renderAll(){renderList();updateDetail();drawMap()}
+setInterval(()=&gt;{if(ST.sel)updateDetail();renderList()},1000);
+
+/* ---------- старт ---------- */
+initMap();BUS.init(onMsg);
+renderAll();
+// подхватить уже активный SOS, если панель открыли позже
+try{const raw=localStorage.getItem(&#x27;ssos_active&#x27;);if(raw){const m=JSON.parse(raw);if(m&amp;&amp;m.id&amp;&amp;Date.now()-(m.started||0)&lt;3600000)onMsg({...m,n:&#x27;boot&#x27;+m.id})}}catch(e){}
+BUS.send({t:&#x27;hello-police&#x27;});
+window.__police={ST,select,accept,dispatchUnit,resolve,UNITS};
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" loading="eager"></iframe>
+<iframe title="Экипаж" id="frame-crew" class="view " srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ru&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;Safety SOS · Экипаж&lt;/title&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css&quot;&gt;&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js&quot;&gt;&lt;/script&gt;&lt;style&gt;*{box-sizing:border-box}body{margin:0;background:#081324;color:#eef5ff;font:15px system-ui,-apple-system,Segoe UI,sans-serif}header{padding:22px;background:#12223b;display:flex;align-items:center;justify-content:space-between}header b{font-size:20px}main{max-width:1180px;margin:auto;padding:18px}.card{background:#152640;border:1px solid #2b405e;border-radius:20px;padding:20px;margin:14px 0}select,button{font:inherit;border:0;border-radius:12px;padding:13px;color:white;background:#234366}select{width:100%}button{width:100%;background:#1677ff;font-weight:700;margin-top:12px}button:disabled{opacity:.4}#map{height:min(60vh,650px);min-height:420px;border-radius:20px;margin:0;background:#25334a}.muted{color:#9aadc8}.tag{color:#ffbc69}h2{margin:5px 0 12px}.notice{background:#3d2918;border-radius:12px;padding:12px;color:#ffd19b}#map{position:relative}#mapWarning{font-size:13px} .mapfallback{height:420px;border-radius:16px;background:linear-gradient(135deg,#193651,#254764);display:grid;place-items:center;text-align:center;padding:24px;color:#d9e9ff}.controls{display:flex;gap:10px}.controls button{flex:1}.live{color:#6ee7b7;font-weight:600} .mapframe{position:relative;overflow:hidden;border-radius:20px;border:1px solid #35506f;box-shadow:0 18px 55px #0005}.map-overlay{position:absolute;top:14px;left:14px;z-index:800;background:#10213bdd;backdrop-filter:blur(14px);padding:12px 16px;border-radius:14px;font-weight:700;pointer-events:none}.map-overlay span{display:block;font-size:12px;color:#90b9f5;font-weight:400;margin-top:4px}.card{box-shadow:0 10px 30px #0002}header{position:sticky;top:0;z-index:1000} @media(min-width:800px){main{display:grid;grid-template-columns:310px 1fr;gap:14px;align-items:start}.notice{grid-column:1/-1}.mapframe{grid-column:2;grid-row:2/5}.card{margin:0}.mapframe #map{height:70vh;min-height:550px}}@media(max-width:799px){main{padding:12px}.mapframe{margin-top:12px}.mapframe #map{height:50vh;min-height:330px}header b{font-size:16px}} &lt;/style&gt;&lt;header&gt;&lt;b&gt;🛡️ Safety SOS · Экипаж&lt;/b&gt;&lt;span class=&quot;tag&quot;&gt;ДЕМО&lt;/span&gt;&lt;/header&gt;&lt;main&gt;&lt;div class=&quot;notice&quot;&gt;Учебная симуляция. Реальные экстренные службы не подключены. Откройте все страницы в одном браузере и на одном сайте.&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;label for=&quot;unit&quot;&gt;Мой экипаж&lt;/label&gt;&lt;select id=&quot;unit&quot;&gt;&lt;option value=&quot;U1&quot;&gt;Патруль-1&lt;/option&gt;&lt;option value=&quot;U2&quot;&gt;Патруль-2&lt;/option&gt;&lt;option value=&quot;U3&quot;&gt;Патруль-3&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;card&quot; id=&quot;task&quot;&gt;&lt;h2&gt;Нет назначенных вызовов&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Ожидание задания от диспетчера…&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;controls&quot;&gt;&lt;button id=&quot;sound&quot; type=&quot;button&quot;&gt;🔔 Включить звук&lt;/button&gt;&lt;button id=&quot;voice&quot; type=&quot;button&quot;&gt;🗣️ Навигация: выкл.&lt;/button&gt;&lt;/div&gt;&lt;p class=&quot;muted&quot; id=&quot;navInfo&quot;&gt;Маршрут появится после назначения экипажа.&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;mapframe&quot;&gt;&lt;div id=&quot;map&quot;&gt;&lt;/div&gt;&lt;div class=&quot;map-overlay&quot;&gt;🛰️ Карта патруля · Ташкент &lt;span id=&quot;mapStatus&quot;&gt;Ожидание SOS&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;mapWarning&quot; class=&quot;notice&quot; hidden&gt;Не удалось загрузить карту. Проверьте интернет или настройте собственный картографический сервис.&lt;/p&gt;&lt;/main&gt;&lt;script&gt;(()=&gt;{&#x27;use strict&#x27;;const $=s=&gt;document.querySelector(s),tasks=new Map();let map,route,marker,tilesLoaded=false,sound=false,voice=false,lastSpoken=0,lastPosition=null;const soundBtn=$(&quot;#sound&quot;),voiceBtn=$(&quot;#voice&quot;);function beep(){if(!sound)return;try{const ctx=new (window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=740;g.gain.value=.12;o.connect(g);g.connect(ctx.destination);o.start();setTimeout(()=&gt;{o.stop();ctx.close()},380)}catch{}}function speak(t,force=false){if(!voice||!window.speechSynthesis)return;if(!force&amp;&amp;Date.now()-lastSpoken&lt;25000)return;lastSpoken=Date.now();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=&quot;ru-RU&quot;;u.rate=1;speechSynthesis.speak(u)}soundBtn.onclick=()=&gt;{sound=!sound;soundBtn.textContent=sound?&quot;🔔 Звук включён&quot;:&quot;🔕 Включить звук&quot;;beep()};voiceBtn.onclick=()=&gt;{voice=!voice;voiceBtn.textContent=voice?&quot;🗣️ Навигация: вкл.&quot;:&quot;🗣️ Навигация: выкл.&quot;;if(voice)speak(&quot;Голосовые подсказки включены. Маршрут учебный, сверяйтесь с дорожными знаками.&quot;,true)};const channel=new BroadcastChannel(&#x27;safety-sos-v1&#x27;);function send(m){m.n=Math.random().toString(36).slice(2)+Date.now();m.ts=Date.now();channel.postMessage(m);localStorage.setItem(&#x27;ssos_msg&#x27;,JSON.stringify(m))}function esc(s){return String(s||&#x27;&#x27;).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g,c=&gt;({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;,&quot;&#x27;&quot;:&#x27;&amp;#39;&#x27;}[c]))}function fallback(){if(tilesLoaded)return;$(&#x27;#mapWarning&#x27;).hidden=false;$(&#x27;#mapWarning&#x27;).textContent=&#x27;Картографические тайлы недоступны. Координаты и задания продолжают обновляться; для полноценной карты настройте лицензированный картографический сервис.&#x27;;if(!map)$(&#x27;#map&#x27;).innerHTML=&#x27;&lt;div class=&quot;mapfallback&quot;&gt;🗺️ Карта временно недоступна. Координаты вызова указаны выше.&lt;/div&gt;&#x27;}
+function initMap(){if(!window.L){fallback();return}try{map=L.map(&#x27;map&#x27;).setView([41.3111,69.2797],12);const layer=L.tileLayer(&#x27;https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}&#x27;,{attribution:&#x27;Tiles © Esri&#x27;,maxZoom:19, maxNativeZoom:17});layer.on(&#x27;tileload&#x27;,()=&gt;{tilesLoaded=true;$(&#x27;#mapWarning&#x27;).hidden=true});layer.on(&#x27;tileerror&#x27;,()=&gt;{if(!tilesLoaded)fallback()});layer.addTo(map);setTimeout(()=&gt;{if(!tilesLoaded)fallback()},9000)}catch{map=null;fallback()}}
+function meters(a,b){if(!a||!b)return 0;const rad=Math.PI/180,dl=(b[0]-a[0])*rad,dn=(b[1]-a[1])*rad,h=Math.sin(dl/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dn/2)**2;return Math.round(12742000*Math.asin(Math.sqrt(h)))}
+function updateNav(a){if(!a?.pos){$(&#x27;#navInfo&#x27;).textContent=&#x27;Ожидание координат&#x27;;return}const old=lastPosition;lastPosition=a.pos;const movement=old?meters(old,a.pos):0;$(&#x27;#navInfo&#x27;).textContent=&#x27;📍 Координаты заявителя: &#x27;+a.pos.map(n=&gt;Number(n).toFixed(5)).join(&#x27;, &#x27;)+(movement&gt;5?&#x27; · переместился на &#x27;+movement+&#x27; м&#x27;:&#x27;&#x27;)+&#x27; · GPS обновляется при активном SOS&#x27;;if(movement&gt;25)speak(&#x27;Внимание. Заявитель переместился. Проверьте обновлённый маршрут.&#x27;)}
+function distance(a,b){const r=Math.PI/180,x=(b[0]-a[0])*r,y=(b[1]-a[1])*r;return 6371000*Math.sqrt(x*x+Math.cos(a[0]*r)*Math.cos(b[0]*r)*y*y)}function render(){const uid=$(&#x27;#unit&#x27;).value;const a=[...tasks.values()].find(x=&gt;x.unitId===uid&amp;&amp;![&#x27;resolved&#x27;,&#x27;cancelled&#x27;].includes(x.state));if(!a){$(&#x27;#mapStatus&#x27;).textContent=&#x27;Ожидание назначения&#x27;;lastPosition=null;$(&#x27;#navInfo&#x27;).textContent=&#x27;Ожидание назначения&#x27;;$(&#x27;#task&#x27;).innerHTML=&#x27;&lt;h2&gt;Нет назначенных вызовов&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Ожидание задания от диспетчера…&lt;/p&gt;&#x27;;if(route&amp;&amp;map)map.removeLayer(route);if(marker&amp;&amp;map)map.removeLayer(marker);route=marker=null;return}$(&#x27;#mapStatus&#x27;).textContent=&#x27;SOS · &#x27;+a.state;const action=a.state===&#x27;assigned&#x27;?&#x27;depart&#x27;:a.state===&#x27;enroute&#x27;?&#x27;arrive&#x27;:a.state===&#x27;arrived&#x27;?&#x27;complete&#x27;:null;const labels={depart:&#x27;🚙 Подтвердить выезд&#x27;,arrive:&#x27;📍 Я на месте&#x27;,complete:&#x27;✅ Завершить задание&#x27;};$(&#x27;#task&#x27;).innerHTML=&#x27;&lt;h2&gt;🚨 Задание &#x27;+esc(a.id)+&#x27;&lt;/h2&gt;&lt;p&gt;&lt;b&gt;Заявитель:&lt;/b&gt; &#x27;+esc(a.name)+&#x27;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Телефон:&lt;/b&gt; &#x27;+esc(a.phone)+&#x27;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Статус:&lt;/b&gt; &#x27;+esc(a.state)+&#x27;&lt;/p&gt;&#x27;+(a.pos?&#x27;&lt;p&gt;&lt;b&gt;Координаты:&lt;/b&gt; &#x27;+a.pos.map(n=&gt;Number(n).toFixed(5)).join(&#x27;, &#x27;)+&#x27;&lt;/p&gt;&#x27;:&#x27;&#x27;)+(action?&#x27;&lt;button id=&quot;action&quot;&gt;&#x27;+labels[action]+&#x27;&lt;/button&gt;&#x27;:&#x27;&lt;p class=&quot;muted&quot;&gt;Ожидайте действий диспетчера&lt;/p&gt;&#x27;);if(action)$(&#x27;#action&#x27;).onclick=()=&gt;{send({t:&#x27;crew-command&#x27;,id:a.id,unitId:uid,action});$(&#x27;#action&#x27;).disabled=true;$(&#x27;#action&#x27;).textContent=&#x27;Отправлено диспетчеру…&#x27;};updateNav(a);if(map&amp;&amp;a.pos){if(marker)map.removeLayer(marker);marker=L.marker(a.pos).addTo(map);if(route)map.removeLayer(route);route=null;if(a.route?.coords?.length)route=L.polyline(a.route.coords,{color:&#x27;#48a2ff&#x27;,weight:5}).addTo(map);map.fitBounds(route?route.getBounds().extend(a.pos):L.latLngBounds([a.pos]).pad(.1),{maxZoom:15})}}function recv(m){if(!m||!m.t)return;if(m.t===&#x27;crew-task&#x27;){const fresh=!tasks.has(m.id);tasks.set(m.id,m);if(fresh){beep();speak(&#x27;Поступило новое задание от диспетчера.&#x27;,true)}render()}if(m.t===&#x27;crew-status&#x27;){const a=tasks.get(m.id);if(a){a.state=m.state;render()}}if(m.t===&#x27;departed&#x27;){const a=tasks.get(m.id);if(a){a.state=&#x27;enroute&#x27;;render()}}if(m.t===&#x27;arrived&#x27;){const a=tasks.get(m.id);if(a){a.state=&#x27;arrived&#x27;;render()}}if(m.t===&#x27;route&#x27;){const a=tasks.get(m.id);if(a){a.route=m;speak(&#x27;Маршрут обновлён. Проверьте карту.&#x27;,true);render()}}if(m.t===&#x27;loc&#x27;){const a=tasks.get(m.id);if(a&amp;&amp;Array.isArray(m.pos)){const old=a.pos;a.pos=m.pos;if(old&amp;&amp;distance(old,m.pos)&gt;25){beep();speak(&#x27;Внимание. Заявитель изменил местоположение. Проверьте маршрут.&#x27;,true)}render()}}}channel.onmessage=e=&gt;recv(e.data);addEventListener(&#x27;storage&#x27;,e=&gt;{if(e.key===&#x27;ssos_msg&#x27;&amp;&amp;e.newValue)try{recv(JSON.parse(e.newValue))}catch{}});$(&#x27;#unit&#x27;).onchange=render;initMap();send({t:&#x27;hello-crew&#x27;});setInterval(()=&gt;send({t:&#x27;hello-crew&#x27;}),15000)})();&lt;/script&gt;&lt;/html&gt;
+" loading="eager"></iframe>
+</section><aside><h2 id="guide-title">📱 Фойдаланувчи</h2><div id="guide"></div><p class="hint">ℹ️ Бу саҳифада учта оригинал HTML алоҳида ойнада ишлайди. Маълумот алмашинуви фақат бир браузер доирасидаги намунавий механизмларга таяниши мумкин. Ҳақиқий Supabase, SMS ва экипаж хизмати уланмаган.</p></aside></main><footer>Safety SOS · UI Preview · Бир HTML, учта бўлим</footer><script>
+const guides={user:{title:'📱 Фойдаланувчи',html:'<p>Бу ерга оддий фойдаланувчи киради.</p><ol><li>Илова очилади ва рўйхатдан ўтиш экрани кўринади.</li><li>Геолокация ва микрофон рухсатлари сўралиши мумкин.</li><li>Картада жойлашув кўринади.</li><li>SOS слайдери орқали намунавий сигнал юборилади.</li><li>Статус ва тарих бўлимларини кўриш мумкин.</li></ol><p><strong>Эслатма:</strong> бу HTML ҳақиқий фавқулодда чақирув юбориш учун эмас.</p>'},dispatch:{title:'🖥 Диспетчер',html:'<p>Бу бўлимга диспетчер киради.</p><ol><li>Чапда чақирувлар рўйхати.</li><li>Ўртада чақирувлар ва экипажлар картаси.</li><li>Ўнгда танланган чақирув маълумоти.</li><li>Экипаж тайинлаш ва статусни бошқариш тугмалари.</li></ol><p>HTML намунасида кўринган маълумотлар ҳақиқий хизмат уланганини билдирмайди.</p>'},crew:{title:'🚙 Экипаж',html:'<p>Бу бўлим экипаж ходими учун.</p><ol><li>Картада вазифа жойлашуви кўринади.</li><li>Тайинланган чақирув карточкаси чиқади.</li><li>Вазифани қабул қилиш ва йўлга чиқиш статуслари.</li><li>Маршрут ва етиб бориш жараёни.</li><li>Вазифани якунлаш.</li></ol><p>Ҳақиқий такси услубидаги навигация ва Supabase синхронизацияси натив иловада алоҳида текширилиши керак.</p>'}};
+function select(k){document.querySelectorAll('button[data-tab]').forEach(b=>{let a=b.dataset.tab===k;b.classList.toggle('active',a);b.setAttribute('aria-pressed',a)});document.querySelectorAll('.view').forEach(f=>f.classList.toggle('active',f.id==='frame-'+k));document.getElementById('guide-title').textContent=guides[k].title;document.getElementById('guide').innerHTML=guides[k].html;history.replaceState(null,'','#'+k)}document.querySelectorAll('button[data-tab]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.tab)));select(guides[location.hash.slice(1)]?location.hash.slice(1):'user');
+</script></body></html>
